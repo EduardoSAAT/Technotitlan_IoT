@@ -1,0 +1,6 @@
+FECHA(1/1/2021)
+	EXITO - Se activo el Server_DATA
+	ALERTA - Se perdio la corriente Electrica
+	EXITO - Se apago el Server_DATA
+	EXITO - Se apago el Server_CENTRAL
+FIN_FECHA
