@@ -59,6 +59,105 @@ public class Monitor extends javax.swing.JFrame {
     
     
     
+    /**
+     * Descripcion: Cargar la Bitacora de cualquier dia
+     *
+     * @param time Fecha para buscan en la bitacora
+     */
+    public void CargarBitacora(String time){
+    //Variables Locales e Inicializacion//
+        boolean condiciones=true;
+	String motivo="Indeterminado";
+        
+        Text bitacora = new Text(Menu.fileBitacoraName);
+        int posTime = bitacora.posLineLike("#FECHA(#"+time+"#)#","#");
+    //Comprobar Condiciones Iniciales//
+    if(posTime<=0){
+        condiciones=false;
+        motivo="No existen registros en la bitacora con fecha:"+time;
+    }
+	//Comenzar Proceso//
+        if(condiciones==true){
+            //Agregar la Fecha Visualizada
+            textFecha.setText(time);
+            
+            int posFinTime = bitacora.posLineLike("#FIN#FECHA(#"+time+"#)#","#");
+            //Agregar todo el contenido de la bitacora
+            textBitacora.setText("");
+            String line;
+            for(int i=posTime; i<=posFinTime; i++){
+                line = bitacora.LeerLineaN(i);
+                textBitacora.append(line);
+            }
+        }else{
+            System.out.println("ERROR en CargarBitacora, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso CargarBitacora Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso CargarBitacora Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    /**
+     * Descripcion: Cargar la Bitacora Actual(dia de Hoy) del Sistema
+     *
+     */
+    public void CargarBitacoraActual(){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            CargarBitacora(Menu.FechaActual);
+        }else{
+            System.out.println("ERROR en CargarBitacoraActual, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso CargarBitacoraActual Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso CargarBitacoraActual Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
+    
+    /**
+     * Descripcion: Cargar el grafico de alertas
+     *
+     * @param	parametros
+     */
+    public void CargarGraficoAlertas(int y){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            
+        }else{
+            System.out.println("ERROR en remplazarSubCad, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso identificador Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso identificador Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
     
      /**
      * Descripcion: Activar el Hilo Listener del Monitor
@@ -85,122 +184,6 @@ public class Monitor extends javax.swing.JFrame {
     
     
     
-    
-    //Definicion del Objeto Listener para Sincronizar el Arduino//
-    public static SerialPortEventListener listenerMonitor = new SerialPortEventListener() {
-        @Override
-        public void serialEvent(SerialPortEvent spe) {
-            if(Arduino.isMessageAvailable()){
-                //Definir la variable del Archivo//
-                    Archivos.Text config = new Text("Config.txt");
-                
-                //Leer la Fecha de Configuracion que nos entrego el Controlador//
-                    String mensaje = Arduino.printMessage();
-                    
-                    
-                //comprobar si el mensaje de CONFIG es de FECHA o de DATA o CONTROL//
-                if(Cad.numOfContains(mensaje,"FECHA",true)>=1){
-                    //Comparar con la Fecha de la ultima configuracion guardada en el Archivo Config.txt//
-                        String  line = config.getLineLike("%CONFIG%SYSTEM%","%");
-
-                        String FechaFILE = Cad.subCadCadACadB(line,"FECHA(",")");
-                        String HoraFILE = Cad.subCadCadACadB(line,"HORA(",")");
-
-                        String FechaMS = Cad.subCadCadACadB(line,"FECHA(",")");
-                        String HoraMS = Cad.subCadCadACadB(line,"HORA(",")");
-
-                    //Seleccionar la configuracion mas reciente//
-                        if(time.AlgoritmsT.compareFechas(FechaFILE, FechaMS, "==")){
-                            //Comprobar entonces las Horas
-                        }else{
-                            if(time.AlgoritmsT.compareFechas(FechaFILE, FechaMS, ">")){
-                                //Seleccionar Config del FILE, enviarla al Archivo Config.txt//
-                            }else{
-                                try {
-                                    //Seleccionar Config del Arduino - Pedir la configuracion Completa//
-                                    Arduino.sendData("GET_CONFIG_DATA");
-                                } catch (Exception ex) {
-                                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                        }
-                }
-                
-                //Si el mensaje es de DATA
-                if(Cad.numOfContains(mensaje,"CONFIG",true)>=1){
-                    //Tomar los Datos de Configuracion y enviarlos al Archivo Config.txt//
-                    int posline;
-                    String nuevaLinea;
-                    //Configuracion del Sistema Electrico
-                    if(Cad.numOfContains(mensaje,"CONFIG_ELECTRICIDAD",true)>=1){
-                        String fuente_poder = Cad.subCadCadACadB(mensaje, "FUENTE_PODER(", ")");
-                            posline = config.posLineLike("%FUENTE%PODER%","%");
-                            nuevaLinea="\t\tFUENTE_PODER("+fuente_poder+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                            
-                        String power_rack = Cad.subCadCadACadB(mensaje, "POWER_RACK(", ")");
-                            posline = config.posLineLike("%POWER%RACK%","%");
-                            nuevaLinea="\t\tPOWER_RACK("+fuente_poder+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                        
-                    }
-                    
-                    //Configuracion de Servidores//
-                    if(Cad.numOfContains(mensaje,"CONFIG_SERVERS",true)>=1){
-                        String pc_central = Cad.subCadCadACadB(mensaje, "CONFIG_SERVERS(", ")");
-                            posline = config.posLineLike("%PC%CENTRAL%","%");
-                            nuevaLinea="\t\tPC_CENTRAL("+pc_central+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                        String pc_data = Cad.subCadCadACadB(mensaje, "PC_DATA(", ")");
-                            posline = config.posLineLike("%PC%DATA%","%");
-                            nuevaLinea="\t\tPC_DATA("+pc_central+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                    }
-                    
-                    //Configuracion de Ilumincacion
-                    if(Cad.numOfContains(mensaje,"CONFIG_ILUMINACION",true)>=1){
-                        String luz_lab_master = Cad.subCadCadACadB(mensaje, "LUZ_LAB_MASTER(", ")");
-                        String luz_lab_taller = Cad.subCadCadACadB(mensaje, "LUZ_LAB_TALLER(", ")");
-                        String luz_lab_pasillo_A = Cad.subCadCadACadB(mensaje, "LUZ_LAB_PASILLO_A(", ")");
-                        String luz_lab_pasillo_B = Cad.subCadCadACadB(mensaje, "LUZ_LAB_PASILLO_B(", ")");
-                        String luz_lab_bano = Cad.subCadCadACadB(mensaje, "LUZ_LAB_BANO(", ")");
-                    }
-                    
-                    
-                    //Terminar la cominicacion
-                        try {
-                            //Arduino.killArduinoConnection();
-                        } catch (Exception ex) {
-                            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                }
-                
-                
-                //Si el mensaje es de Control
-                if(Cad.numOfContains(mensaje,"CONTROL",true)>=1){
-                    
-                    //Verificar Orden de Terminar Sincronizacion//
-                    if(Cad.numOfContains(mensaje,"END SYNCRO",true)>=1){
-                        try {
-                            Arduino.killArduinoConnection();
-                            Menu.textStatusControlador.setText("DESACTIVADO");
-                        } catch (Exception ex) {
-                            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    
-                }
-            }
-        }
-    };
-    
-    
-    
-    
-    
-    
-    
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -212,45 +195,45 @@ public class Monitor extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textBitacora = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        textGrafico = new javax.swing.JTextArea();
+        botonBACK = new javax.swing.JButton();
+        botonNEXT = new javax.swing.JButton();
+        textFecha = new javax.swing.JTextField();
+        botonGO = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
-        jButton4 = new javax.swing.JButton();
+        textGeneral = new javax.swing.JTextArea();
+        botonHOY = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("TECHNOTITLAN - MONITOR");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        textBitacora.setColumns(20);
+        textBitacora.setRows(5);
+        jScrollPane1.setViewportView(textBitacora);
 
         jLabel2.setText("Grafico de Alertas");
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
+        textGrafico.setColumns(20);
+        textGrafico.setRows(5);
+        jScrollPane2.setViewportView(textGrafico);
 
-        jButton1.setText("<--");
+        botonBACK.setText("<--");
 
-        jButton2.setText("-->");
+        botonNEXT.setText("-->");
 
-        jTextField1.setText("jTextField1");
+        textFecha.setText("jTextField1");
 
-        jButton3.setText("GO");
+        botonGO.setText("GO");
 
-        jTextArea3.setColumns(20);
-        jTextArea3.setRows(5);
-        jScrollPane3.setViewportView(jTextArea3);
+        textGeneral.setColumns(20);
+        textGeneral.setRows(5);
+        jScrollPane3.setViewportView(textGeneral);
 
-        jButton4.setText("HOY");
+        botonHOY.setText("HOY");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -269,15 +252,15 @@ public class Monitor extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(0, 27, Short.MAX_VALUE)
-                                .addComponent(jButton4)
+                                .addComponent(botonHOY)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
+                                .addComponent(botonBACK)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(textFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
+                                .addComponent(botonNEXT)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3))
+                                .addComponent(botonGO))
                             .addComponent(jScrollPane1))))
                 .addContainerGap())
         );
@@ -293,11 +276,11 @@ public class Monitor extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2)
-                        .addComponent(jButton3)
-                        .addComponent(jButton4))
+                        .addComponent(botonBACK)
+                        .addComponent(textFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botonNEXT)
+                        .addComponent(botonGO)
+                        .addComponent(botonHOY))
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
@@ -343,18 +326,18 @@ public class Monitor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton botonBACK;
+    private javax.swing.JButton botonGO;
+    private javax.swing.JButton botonHOY;
+    private javax.swing.JButton botonNEXT;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextArea jTextArea3;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextArea textBitacora;
+    private javax.swing.JTextField textFecha;
+    private javax.swing.JTextArea textGeneral;
+    private javax.swing.JTextArea textGrafico;
     // End of variables declaration//GEN-END:variables
 }

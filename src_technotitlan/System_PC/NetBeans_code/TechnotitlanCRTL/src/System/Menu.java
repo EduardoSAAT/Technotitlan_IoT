@@ -21,6 +21,7 @@ public class Menu extends javax.swing.JFrame {
     //Variables Globales para esta Clase//
     public static String fileConfigName = "Config.txt";
     public static String fileBitacoraName = "Bitacora.txt";
+    public static String FechaActual = time.AlgoritmsT.getFechaActual();
     
     //Variables del Arduino//
     public static panamahitek.Arduino.PanamaHitek_Arduino Arduino;
@@ -590,86 +591,60 @@ public class Menu extends javax.swing.JFrame {
             if(Arduino.isMessageAvailable()){
                 //Definir la variable del Archivo//
                     Archivos.Text config = new Text("Config.txt");
+                    int posA= config.posLineLike("#CONFIG#SYSTEM#LAST#STATUS#","#");
+                    int posB= config.posLineLike("#FIN#CONFIG##LAST#STATUS#","#");
                 
                 //Leer la Fecha de Configuracion que nos entrego el Controlador//
                     String mensaje = Arduino.printMessage();
-                    
-                    
-                //comprobar si el mensaje de CONFIG es de FECHA o de DATA o CONTROL//
-                if(Cad.numOfContains(mensaje,"FECHA",true)>=1){
-                    //Comparar con la Fecha de la ultima configuracion guardada en el Archivo Config.txt//
-                        String  line = config.getLineLike("%CONFIG%SYSTEM%","%");
-
-                        String FechaFILE = Cad.subCadCadACadB(line,"FECHA(",")");
-                        String HoraFILE = Cad.subCadCadACadB(line,"HORA(",")");
-
-                        String FechaMS = Cad.subCadCadACadB(line,"FECHA(",")");
-                        String HoraMS = Cad.subCadCadACadB(line,"HORA(",")");
-
-                    //Seleccionar la configuracion mas reciente//
-                        if(time.AlgoritmsT.compareFechas(FechaFILE, FechaMS, "==")){
-                            //Comprobar entonces las Horas
-                        }else{
-                            if(time.AlgoritmsT.compareFechas(FechaFILE, FechaMS, ">")){
-                                //Seleccionar Config del FILE, enviarla al Archivo Config.txt//
-                            }else{
-                                try {
-                                    //Seleccionar Config del Arduino - Pedir la configuracion Completa//
-                                    Arduino.sendData("GET_CONFIG_DATA");
-                                } catch (Exception ex) {
-                                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                        }
-                }
                 
-                //Si el mensaje es de DATA
+                    
+                    
+                //Si el mensaje es de CONFIG
                 if(Cad.numOfContains(mensaje,"CONFIG",true)>=1){
                     //Tomar los Datos de Configuracion y enviarlos al Archivo Config.txt//
                     int posline;
                     String nuevaLinea;
+                    
+                    
                     //Configuracion del Sistema Electrico
-                    if(Cad.numOfContains(mensaje,"CONFIG_ELECTRICIDAD",true)>=1){
-                        String fuente_poder = Cad.subCadCadACadB(mensaje, "FUENTE_PODER(", ")");
-                            posline = config.posLineLike("%FUENTE%PODER%","%");
-                            nuevaLinea="\t\tFUENTE_PODER("+fuente_poder+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                            
-                        String power_rack = Cad.subCadCadACadB(mensaje, "POWER_RACK(", ")");
-                            posline = config.posLineLike("%POWER%RACK%","%");
-                            nuevaLinea="\t\tPOWER_RACK("+fuente_poder+")";
+                        String UPS_DATA_CENTER = Cad.subCadCadACadB(mensaje, "UPS_DATA_CENTER(", ")");
+                            posline = config.posLineLikeBetween("%UPS_DATA_CENTER%","%",posA,posB);
+                            nuevaLinea="\t\tUPS_DATA_CENTER("+UPS_DATA_CENTER+")";
                             config.RemplaceLineN(posline, nuevaLinea);
                         
-                    }
-                    
+                            
+                        String POWER_RACK = Cad.subCadCadACadB(mensaje, "POWER_RACK(", ")");
+                            posline = config.posLineLikeBetween("%POWER_RACK%","%",posA,posB);
+                            nuevaLinea="\t\tPOWER_RACK("+POWER_RACK+")";
+                            config.RemplaceLineN(posline, nuevaLinea);
+                            
+                        
                     //Configuracion de Servidores//
-                    if(Cad.numOfContains(mensaje,"CONFIG_SERVERS",true)>=1){
-                        String pc_central = Cad.subCadCadACadB(mensaje, "CONFIG_SERVERS(", ")");
-                            posline = config.posLineLike("%PC%CENTRAL%","%");
-                            nuevaLinea="\t\tPC_CENTRAL("+pc_central+")";
+                        String PC_CENTRAL = Cad.subCadCadACadB(mensaje, "PC_CENTRAL(", ")");
+                            posline = config.posLineLikeBetween("%PC_CENTRAL%","%",posA,posB);
+                            nuevaLinea="\t\tPC_CENTRAL("+PC_CENTRAL+")";
                             config.RemplaceLineN(posline, nuevaLinea);
-                        String pc_data = Cad.subCadCadACadB(mensaje, "PC_DATA(", ")");
-                            posline = config.posLineLike("%PC%DATA%","%");
-                            nuevaLinea="\t\tPC_DATA("+pc_central+")";
+                            
+                            
+                        String PC_DATA = Cad.subCadCadACadB(mensaje, "PC_DATA(", ")");
+                            posline = config.posLineLikeBetween("%PC_DATA%","%",posA,posB);
+                            nuevaLinea="\t\tPC_DATA("+PC_DATA+")";
                             config.RemplaceLineN(posline, nuevaLinea);
-                    }
-                    
+                            
+                            
                     //Configuracion de Ilumincacion
-                    if(Cad.numOfContains(mensaje,"CONFIG_ILUMINACION",true)>=1){
-                        String luz_lab_master = Cad.subCadCadACadB(mensaje, "LUZ_LAB_MASTER(", ")");
-                        String luz_lab_taller = Cad.subCadCadACadB(mensaje, "LUZ_LAB_TALLER(", ")");
-                        String luz_lab_pasillo_A = Cad.subCadCadACadB(mensaje, "LUZ_LAB_PASILLO_A(", ")");
-                        String luz_lab_pasillo_B = Cad.subCadCadACadB(mensaje, "LUZ_LAB_PASILLO_B(", ")");
-                        String luz_lab_bano = Cad.subCadCadACadB(mensaje, "LUZ_LAB_BANO(", ")");
-                    }
-                    
-                    
-                    //Terminar la cominicacion
-                        try {
-                            //Arduino.killArduinoConnection();
-                        } catch (Exception ex) {
-                            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        
+                        
+                        
+                    //Despues de Tomar el mensaje
+                        //Agregar accion a la Bitacora//
+                            Text bitacora = new Text(fileBitacoraName);
+                            int posLastLine = bitacora.posLineLikeLast("#FIN#FECHA#","#");
+                            bitacora.InsertLineN(posLastLine,"EXITO - Se configuro = "+mensaje);
+                            
+                        //Pedir Refresh al Manager//
+                            
+                        //Pedir Refresh al Monitor//
                 }
                 
                 
@@ -685,8 +660,9 @@ public class Menu extends javax.swing.JFrame {
                             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
                 }
+                
+                
             }
         }
     };
