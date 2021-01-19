@@ -128,11 +128,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&lt;--"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonBACKActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="botonNEXT">
       <Properties>
         <Property name="text" type="java.lang.String" value="--&gt;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonNEXTActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="textFecha">
       <Properties>
@@ -143,6 +149,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="GO"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonGOActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane3">
       <AuxValues>
@@ -163,6 +172,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="HOY"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonHOYActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

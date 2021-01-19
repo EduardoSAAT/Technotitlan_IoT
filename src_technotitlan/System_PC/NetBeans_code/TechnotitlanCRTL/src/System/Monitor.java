@@ -222,18 +222,38 @@ public class Monitor extends javax.swing.JFrame {
         jScrollPane2.setViewportView(textGrafico);
 
         botonBACK.setText("<--");
+        botonBACK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonBACKActionPerformed(evt);
+            }
+        });
 
         botonNEXT.setText("-->");
+        botonNEXT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonNEXTActionPerformed(evt);
+            }
+        });
 
         textFecha.setText("jTextField1");
 
         botonGO.setText("GO");
+        botonGO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonGOActionPerformed(evt);
+            }
+        });
 
         textGeneral.setColumns(20);
         textGeneral.setRows(5);
         jScrollPane3.setViewportView(textGeneral);
 
         botonHOY.setText("HOY");
+        botonHOY.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonHOYActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -289,6 +309,26 @@ public class Monitor extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void botonHOYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonHOYActionPerformed
+        CargarBitacoraActual();
+    }//GEN-LAST:event_botonHOYActionPerformed
+
+    private void botonGOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGOActionPerformed
+        CargarBitacora(textFecha.getText());
+    }//GEN-LAST:event_botonGOActionPerformed
+
+    private void botonNEXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNEXTActionPerformed
+        String fechaNOW = textFecha.getText();
+        String fechaNew = time.AlgoritmsT.sumarDias(fechaNOW,1);
+        
+        textFecha.setText(fechaNew);
+        CargarBitacora(fechaNew);
+    }//GEN-LAST:event_botonNEXTActionPerformed
+
+    private void botonBACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBACKActionPerformed
+        
+    }//GEN-LAST:event_botonBACKActionPerformed
 
     /**
      * @param args the command line arguments
