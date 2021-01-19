@@ -327,7 +327,7 @@ public class Monitor extends javax.swing.JFrame {
     }//GEN-LAST:event_botonNEXTActionPerformed
 
     private void botonBACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBACKActionPerformed
-        
+        //prueba
     }//GEN-LAST:event_botonBACKActionPerformed
 
     /**
