@@ -327,9 +327,44 @@ public class Monitor extends javax.swing.JFrame {
     }//GEN-LAST:event_botonNEXTActionPerformed
 
     private void botonBACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBACKActionPerformed
-        //prueba
+        
     }//GEN-LAST:event_botonBACKActionPerformed
 
+    
+    
+    /**
+     * Descripcion: Funcion de Refresh para Actualizar la ventana
+     *
+     */
+    public void Refresh(){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            //Recargar Bitacora
+                CargarBitacoraActual();
+            
+            //Recargar Grafico
+                CargarGraficoAlertas(4);
+            
+            //Regargar General Info
+        }else{
+            System.out.println("ERROR en Refresh, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso Refresh Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso Refresh Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */
