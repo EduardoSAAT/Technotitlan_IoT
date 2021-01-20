@@ -583,6 +583,55 @@ public class Menu extends javax.swing.JFrame {
     
     
     
+    /**
+     * Descripcion: Agregar un mensaje a la bitacora
+     *
+     * @param alerta Tipo de Alerta que se envia
+     * @param mensaje El mensaje a mostrar
+     */
+    public static void addBitacora(String alerta, String mensaje){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+	//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            //Variables del Archivo//
+            Text bitacora = new Text(fileBitacoraName);
+            String line=""; int posLine=0;
+            
+            //Comprobar si el registro que se va agregar cae en un bloque existente o hay que crear un nuevo bloque de timepo
+            String fechaActual = time.AlgoritmsT.getFechaActual();
+            int posA=bitacora.posLineLike("#FECHA#"+fechaActual+"#","#");
+            if(posA>=1){
+                //Entonces solo agregar el registro en esa posicion
+                int posB=bitacora.posLineLike("#FIN#FECHA#"+fechaActual+"#","#");
+                
+                String texto = alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
+                bitacora.InsertLineN(posB,texto);
+            }else{
+                //Entonces crear el nuevo bloque de registros//
+                bitacora.AgregarLine("FECHA("+fechaActual+")");
+                String texto = alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
+                bitacora.AgregarLine(texto);
+                bitacora.AgregarLine("FIN_FECHA("+fechaActual+")");
+            }
+        }else{
+            System.out.println("ERROR en addBitacora, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso addBitacora Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso addBitacora Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
+    
     
     //Definicion del Objeto Listener para Sincronizar el Arduino//
     public static SerialPortEventListener Listener = new SerialPortEventListener() {
@@ -638,9 +687,7 @@ public class Menu extends javax.swing.JFrame {
                         
                     //Despues de Tomar el mensaje
                         //Agregar accion a la Bitacora//
-                            Text bitacora = new Text(fileBitacoraName);
-                            int posLastLine = bitacora.posLineLikeLast("#FIN#FECHA#","#");
-                            bitacora.InsertLineN(posLastLine,"EXITO - Se configuro = "+mensaje);
+                            addBitacora("EXITO", mensaje);
                             
                         //Pedir Refresh al Manager//
                             
