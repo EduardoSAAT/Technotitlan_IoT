@@ -419,6 +419,10 @@ public class Menu extends javax.swing.JFrame {
                 
                 //Sistema de Iluminacion
                     
+                
+                
+                //Mandar Mensaje a Bitacora
+                addBitacora("EXITO","Se ha establecido la configuracion: "+modo);
             }else{
                 //Simplemente dejar el LAST como estaba
             }
@@ -555,6 +559,9 @@ public class Menu extends javax.swing.JFrame {
                     Arduino.arduinoRXTX(PuertoArduino,Cad.aEntero(SerialArduino,9600),Listener);
                     
                     Conection = true;
+                    
+                    //Agregar conexion realizada a bitacora//
+                    addBitacora("EXITO","Se ha establecido conexion con el Controlador Central");
                 } catch (Exception ex) {
                     textStatusControlador.setText("DESACTIVADO");
                     textStatusGeneral.setText("Error al Conectar con Arduino.... Reintentando en 1Mins");
@@ -637,13 +644,25 @@ public class Menu extends javax.swing.JFrame {
     public static SerialPortEventListener Listener = new SerialPortEventListener() {
         @Override
         public void serialEvent(SerialPortEvent spe) {
+            
+            //OK al Controlador Central, que todo esta bien y que avance con el monitoreo
+                try {
+                    Arduino.sendData("OK");
+                    
+                    //Mandar la instruccion de OK para continuar con el monitoreo 5 veces cada segundo
+                    Thread.sleep(200);
+                } catch (Exception ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            
+            //ESCUCHAR, Si el Controlador Central manda un mensaje//
             if(Arduino.isMessageAvailable()){
                 //Definir la variable del Archivo//
                     Archivos.Text config = new Text("Config.txt");
                     int posA= config.posLineLike("#CONFIG#SYSTEM#LAST#STATUS#","#");
                     int posB= config.posLineLike("#FIN#CONFIG##LAST#STATUS#","#");
                 
-                //Leer la Fecha de Configuracion que nos entrego el Controlador//
+                //Leer el mensaje de Configuracion que nos entrego el Controlador//
                     String mensaje = Arduino.printMessage();
                 
                     

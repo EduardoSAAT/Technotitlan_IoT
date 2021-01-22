@@ -71,7 +71,7 @@ void loop() {
       Monitoreo();
     }else{
       //Si es un mensaje de reconfiguracion//
-      if(ms=="CONFIG"){
+      if(ms.indexOf("CONFIG")>=0){
         Reconfig(ms);
       }
     }
@@ -146,6 +146,7 @@ void ResurekcionPC_MASTER(){
       //Intentar levantar la PC_CENTRAL
       setConfig_PC_CENTRAL(true);
     }
+    
   }else{
     //Si no funciona el sistema electrico, solo esperar
   }
@@ -237,7 +238,10 @@ void setConfig_PC_CENTRAL(bool state){
       PC_CENTRAL==true;
       digitalWrite(pinPC_CENTRAL, HIGH);
       delay(800);
-      digitalWrite(pinPC_CENTRAL, LOW); 
+      digitalWrite(pinPC_CENTRAL, LOW);
+
+      //Esperar 10mins, en lo que el PC enciende e Inicia los Sistemas para continuar
+      delay(600000);
     }
   }else{
     //Mandar la instruccion de Apagado
