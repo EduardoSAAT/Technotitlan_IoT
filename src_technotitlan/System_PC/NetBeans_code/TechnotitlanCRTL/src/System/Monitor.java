@@ -8,8 +8,8 @@ package System;
 import Algoritms.Cad;
 import Archivos.Text;
 import static System.Menu.Arduino;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
+//import gnu.io.SerialPortEvent;
+//import gnu.io.SerialPortEventListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -315,7 +315,13 @@ public class Monitor extends javax.swing.JFrame {
     }//GEN-LAST:event_botonHOYActionPerformed
 
     private void botonGOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGOActionPerformed
-        CargarBitacora(textFecha.getText());
+        //CargarBitacora(textFecha.getText());
+        
+        try {
+            Menu.Arduino.killArduinoConnection();
+        } catch (Exception ex) {
+            Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_botonGOActionPerformed
 
     private void botonNEXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNEXTActionPerformed

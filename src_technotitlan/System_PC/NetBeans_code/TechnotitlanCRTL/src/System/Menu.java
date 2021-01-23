@@ -7,11 +7,18 @@ package System;
 import Algoritms.Cad;
 import Archivos.Text;
 import Graphic.ErrorCatcher;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
+import com.panamahitek.ArduinoException;
+import com.panamahitek.PanamaHitek_Arduino;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import panamahitek.Arduino.PanamaHitek_Arduino;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+//import gnu.io.SerialPortEvent;
+//import gnu.io.SerialPortEventListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jssc.SerialPortException;
+//import panamahitek.Arduino.PanamaHitek_Arduino;
 
 /**
  *
@@ -22,11 +29,16 @@ public class Menu extends javax.swing.JFrame {
     public static String fileConfigName = "Config.txt";
     public static String fileBitacoraName = "Bitacora.txt";
     public static String FechaActual = time.AlgoritmsT.getFechaActual();
+    public static double TIME_REPEAT_SEND_OK_MENSAJE;
+    public static double MAX_TIME_WAIT_OK_REPLY;
+    public static double TIME_REPEAT_TRY_MAKECONEXION;
     
     //Variables del Arduino//
-    public static panamahitek.Arduino.PanamaHitek_Arduino Arduino;
-    public static String PuertoArduino="";
-    public static String SerialArduino="";
+    public static com.panamahitek.PanamaHitek_Arduino Arduino;
+    public static String PuertoArduino="COM16";
+    public static String SerialArduino="9600";
+    public static HiloCheckConexion HiloCheckConetion;
+    
     
     //Variables para el Monitor//
     public static Monitor monitor;
@@ -258,6 +270,21 @@ public class Menu extends javax.swing.JFrame {
                 if(archivo.posLineLike("%CONFIG%ARDUINO%","%")==-1){
                     salida="ERROR archivo Config, no Tiene Definida ninguna configuracion del arduino";
                 }
+                
+                //Obtener los valores de configuracion//
+                String line;
+                
+                //Para TIME_REPEAT_SEND_OK_MENSAJE
+                line = archivo.getLineLike("$TIME_REPEAT_SEND_OK_MENSAJE$","$");
+                TIME_REPEAT_SEND_OK_MENSAJE=Cad.aEntero(Cad.subCadCadACadB(line,"(",")"),0);
+                
+                //Para MAX_TIME_WAIT_OK_REPLY
+                line = archivo.getLineLike("$MAX_TIME_WAIT_OK_REPLY$","$");
+                MAX_TIME_WAIT_OK_REPLY=Cad.aEntero(Cad.subCadCadACadB(line,"(",")"),0);
+                
+                //Para TIME_REPEAT_TRY_MAKECONEXION
+                line = archivo.getLineLike("$TIME_REPEAT_TRY_MAKECONEXION$","$");
+                TIME_REPEAT_TRY_MAKECONEXION=Cad.aEntero(Cad.subCadCadACadB(line,"(",")"),0);
             }else{
                 salida="ERROR, Archivo:"+fileConfigName+" No encontrado";
             }
@@ -266,6 +293,52 @@ public class Menu extends javax.swing.JFrame {
 	}
     //Terminar Proceso//
         return salida;
+    }
+    
+    
+    
+    /**
+     * Descripcion: Reiniciar el Sistema para su resurekcion
+     *
+     * 
+     */
+    public static void Resurekcion(){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+    String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            //Matar todos los procesos//
+            //manager.dispose();
+            monitor.dispose();
+            try {
+                Arduino.killArduinoConnection();
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            HiloCheckConetion.Detener();
+            textStatusControlador.setText("DESACTIVADO");
+            textStatusGeneral.setText("Realizando Resurekcion del System");
+            
+            //Reiniciar la Sincronizacion
+            Sincronizar();
+            
+            //Iniciar el Systema//
+            IniciarSystem();
+            
+            //Mensaje por consola
+            System.out.println("Resurekcion completada del sistema");
+        }else{
+            System.out.println("ERROR en Resurekcion, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso Resurekcion Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso Resurekcion Terminado con FALLO");
+    	}
     }
     
     
@@ -464,23 +537,23 @@ public class Menu extends javax.swing.JFrame {
                 //Sistema electrico
                     //Para el UPS_DATA_CENTER
                         mensaje = config.getLineLikeBetween("#UPS_DATA_CENTER#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje;
+                        mensaje = "CONFIG/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
                     
                     //Para el POWER_RACK
                         mensaje = config.getLineLikeBetween("#POWER_RACK#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje;
+                        mensaje = "CONFIG/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
                 
                 //Sistema Data Center
                     //Para PC_CENTRAL
                         mensaje = config.getLineLikeBetween("#PC_CENTRAL#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje;
+                        mensaje = "CONFIG/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
                     
                     //Para PC_DATA
                         mensaje = config.getLineLikeBetween("#PC_DATA#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje;
+                        mensaje = "CONFIG/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
                 
                 //Sistema de Ilumincacion
@@ -554,27 +627,39 @@ public class Menu extends javax.swing.JFrame {
             //Intentar realizar la conexion, cada 1Mins
             while(Conection == false){
                 try {
-                    //Definir la Variable para Manejar el Arduino
-                    panamahitek.Arduino.PanamaHitek_Arduino Arduino = new PanamaHitek_Arduino();
+                    //Crear el Listener con su Arduino
+                    Arduino = new PanamaHitek_Arduino();
                     Arduino.arduinoRXTX(PuertoArduino,Cad.aEntero(SerialArduino,9600),Listener);
-                    
                     Conection = true;
+                    
+                    //Crear HiloCheckConexion//
+                    HiloCheckConetion = new HiloCheckConexion(1);
+                    HiloCheckConetion.start();
+                    HiloCheckConetion.ActualizarLastPresencia();
                     
                     //Agregar conexion realizada a bitacora//
                     addBitacora("EXITO","Se ha establecido conexion con el Controlador Central");
+                    
+                    //Mostrar mensaje por consola
+                    System.out.println("SYSTEM: Se ha logrado establecer conexion con el Controlador Central");
+                    System.out.println("SYSTEM: Controlador central Activo en Puerto:"+PuertoArduino+" Velocidad Serial:"+SerialArduino);
+                    
+                    textStatusControlador.setText("ACTIVADO");
+                    textStatusGeneral.setText("Controlador Central en Puerto:"+PuertoArduino+" Velocidad Serial:"+SerialArduino);
                 } catch (Exception ex) {
                     textStatusControlador.setText("DESACTIVADO");
                     textStatusGeneral.setText("Error al Conectar con Arduino.... Reintentando en 1Mins");
                     
+                    //Esperar 1Mins para Reconexion
+                    System.out.println("SYSTEM: No se pudo establecer conexion con el Controlador Central, reintentando en "+TIME_REPEAT_TRY_MAKECONEXION+"milis");
+                    try {
+                        Thread.sleep((long) TIME_REPEAT_TRY_MAKECONEXION);
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                    
                     //Si pasa 1Hr y no se puede levantar el sistema enviar una notificacion de Alerta
                         //EnviarAlerta();
-                }
-                
-                try {
-                    //Esperar 1Mins para Reconexion
-                    Thread.sleep(60000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }else{
@@ -615,12 +700,12 @@ public class Menu extends javax.swing.JFrame {
                 //Entonces solo agregar el registro en esa posicion
                 int posB=bitacora.posLineLike("#FIN#FECHA#"+fechaActual+"#","#");
                 
-                String texto = alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
+                String texto = "\t"+alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
                 bitacora.InsertLineN(posB,texto);
             }else{
                 //Entonces crear el nuevo bloque de registros//
                 bitacora.AgregarLine("FECHA("+fechaActual+")");
-                String texto = alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
+                String texto = "\t"+alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
                 bitacora.AgregarLine(texto);
                 bitacora.AgregarLine("FIN_FECHA("+fechaActual+")");
             }
@@ -644,16 +729,7 @@ public class Menu extends javax.swing.JFrame {
     public static SerialPortEventListener Listener = new SerialPortEventListener() {
         @Override
         public void serialEvent(SerialPortEvent spe) {
-            
-            //OK al Controlador Central, que todo esta bien y que avance con el monitoreo
-                try {
-                    Arduino.sendData("OK");
-                    
-                    //Mandar la instruccion de OK para continuar con el monitoreo 5 veces cada segundo
-                    Thread.sleep(200);
-                } catch (Exception ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            try{
             
             //ESCUCHAR, Si el Controlador Central manda un mensaje//
             if(Arduino.isMessageAvailable()){
@@ -664,7 +740,7 @@ public class Menu extends javax.swing.JFrame {
                 
                 //Leer el mensaje de Configuracion que nos entrego el Controlador//
                     String mensaje = Arduino.printMessage();
-                
+                    System.out.println("Listener: Recibido Arduino mensaje - "+mensaje);
                     
                     
                 //Si el mensaje es de CONFIG
@@ -714,21 +790,20 @@ public class Menu extends javax.swing.JFrame {
                 }
                 
                 
-                //Si el mensaje es de Control
-                if(Cad.numOfContains(mensaje,"CONTROL",true)>=1){
-                    
-                    //Verificar Orden de Terminar Sincronizacion//
-                    if(Cad.numOfContains(mensaje,"END SYNCRO",true)>=1){
-                        try {
-                            Arduino.killArduinoConnection();
-                            Menu.textStatusControlador.setText("DESACTIVADO");
-                        } catch (Exception ex) {
-                            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
+                //Para Actualizar la presencia del Controlador Central
+                if(Cad.numOfContains(mensaje,"OK-Recibido",true)>=1){
+                    System.out.println("Listener: Se ha detectado la presencia del Controlador Central");
+                    HiloCheckConetion.ActualizarLastPresencia();
                 }
-                
-                
+            }
+            
+            
+        }   catch (SerialPortException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("OCURRIO UN ERROR FATAL");
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("OCURRIO UN ERROR FATAL");
             }
         }
     };

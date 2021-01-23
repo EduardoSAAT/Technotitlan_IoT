@@ -63,12 +63,13 @@ void loop() {
 
     //Leer el mensaje del monitor Serial
     ms = Serial.readStringUntil("\n");
-
-
     //Comprobar que tipo de mensaje es Recibido
-    if(ms=="OK"){
+    if(ms=="OK\n"){
       //Solo hacer funciones de Monitoreo  
       Monitoreo();
+
+      //Responder al OK- Anunciar la precencia del Controlador Central
+      Serial.println("OK-Recibido");
     }else{
       //Si es un mensaje de reconfiguracion//
       if(ms.indexOf("CONFIG")>=0){
@@ -119,7 +120,7 @@ void setDefaultConfig(){
     bool POWER_RACK=false;
     
   //Servidores - CONFIG_SERVERS//
-    bool PC_CENTRAL=true;
+    bool PC_CENTRAL=false;
     bool PC_DATA=false;
   
   //Sistema de Ilumniacion - CONFIG_ILUMINACION//
