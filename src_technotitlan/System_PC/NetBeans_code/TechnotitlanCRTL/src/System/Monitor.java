@@ -7,6 +7,8 @@ package System;
 
 import Algoritms.Cad;
 import Archivos.Text;
+import Dinamic.VectorFloat;
+import Graphic.BarGraphic;
 import static System.Menu.Arduino;
 //import gnu.io.SerialPortEvent;
 //import gnu.io.SerialPortEventListener;
@@ -18,7 +20,11 @@ import java.util.logging.Logger;
  * @author Ing Lalux
  */
 public class Monitor extends javax.swing.JFrame {
-
+    int numEXITO=0;
+    int numERROR=0;
+    int numALERT=0;
+    
+    
     /**
      * Creates new form Monitor
      */
@@ -44,11 +50,14 @@ public class Monitor extends javax.swing.JFrame {
 	//no hay condiciones Iniciales
 	//Comenzar Proceso//
         if(condiciones==true){
+            //Cargar General Info//
+            CargarGeneralInfo();
+            
             //Cargar Bitacora Actual//
+            CargarBitacoraActual();
             
             //Cargar Grafico Alertas//
-            
-            //ActivarListenerMonitor//
+            CargarGrafico();
             
 	}else{
             System.out.println("ERROR en Constructor, motivo: "+motivo+", valor regresado: "+salida);
@@ -87,7 +96,7 @@ public class Monitor extends javax.swing.JFrame {
             String line;
             for(int i=posTime; i<=posFinTime; i++){
                 line = bitacora.LeerLineaN(i);
-                textBitacora.append(line);
+                textBitacora.append(line+"\n");
             }
         }else{
             System.out.println("ERROR en CargarBitacora, motivo: "+motivo);
@@ -131,11 +140,10 @@ public class Monitor extends javax.swing.JFrame {
     
     
     /**
-     * Descripcion: Cargar el grafico de alertas
+     * Descripcion: Cargar el grafico del sistema
      *
-     * @param	parametros
      */
-    public void CargarGraficoAlertas(int y){
+    public void CargarGrafico(){
     //Variables Locales e Inicializacion//
     boolean condiciones=true;
 	String motivo="Indeterminado";
@@ -143,17 +151,99 @@ public class Monitor extends javax.swing.JFrame {
 		//no hay condiciones Iniciales
 	//Comenzar Proceso//
         if(condiciones==true){
+            Dinamic.VectorFloat vectorData = new VectorFloat(3);
             
+            //Agregar datos
+            vectorData.addVauleRigth(numEXITO);
+            vectorData.addVauleRigth(numALERT);
+            vectorData.addVauleRigth(numERROR);
+            
+            float[] vc = new float[3];
+            vc[0] = numEXITO;
+            vc[1] = numALERT;
+            vc[2] = numERROR;
+            
+            //Construir grafico
+            Graphic.BarGraphic grafico = new BarGraphic(13,3,vc);
+            grafico.ImprimirGrafico();
+            
+            //Mostrar Grafico
+            textGrafico.setText("");
+            
+            for(int i=0; i<grafico.vectorFilas.length; i++){
+                textGrafico.append(grafico.vectorFilas[i]+"\n");
+            }
+            textGrafico.append("EXITO - ALERT - ERROR");
         }else{
-            System.out.println("ERROR en remplazarSubCad, motivo: "+motivo);
+            System.out.println("ERROR en CargarGrafico, motivo: "+motivo);
 	}
     //Terminar Proceso//
     	if(condiciones==true){
-            System.out.println("Proceso identificador Terminado con EXITO");
+            System.out.println("Proceso CargarGrafico Terminado con EXITO");
     	}else{
-            System.out.println("Proceso identificador Terminado con FALLO");
+            System.out.println("Proceso CargarGrafico Terminado con FALLO");
     	}
     }
+    
+    
+    
+    
+    
+    /**
+     * Descripcion: Cargar la informacion General
+     *
+     */
+    public void CargarGeneralInfo(){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            Text bitacora = new Text(Menu.fileBitacoraName);
+            int posA = bitacora.posLineLike("#FECHA#"+time.AlgoritmsT.getFechaActual()+"#","#");
+            int posB = bitacora.posLineLike("#FIN#FECHA#"+time.AlgoritmsT.getFechaActual()+"#","#");
+            
+            String line="";
+            numEXITO=0;
+            numERROR=0;
+            numALERT=0;
+            for(int x=posA; x<=posB; x++){
+                line=bitacora.LeerLineaN(x);
+                
+                //Numero de Modificaciones con Exito
+                if(Cad.numOfContains(line,"EXITO",false)>=1){
+                    numEXITO=numEXITO+1;
+                }
+                //Numero de Errores Dectados
+                if(Cad.numOfContains(line,"ERROR",false)>=1){
+                    numERROR=numERROR+1;
+                }
+                //Numero de Alertas
+                if(Cad.numOfContains(line,"ALERT",false)>=1){
+                    numALERT=numALERT+1;
+                }
+            }
+            
+            
+            //Mensaje final//
+            textGeneral.setText("");
+            
+            textGeneral.append("Operaciones EXITO: "+numEXITO+"\n");
+            textGeneral.append("Operaciones ALERT: "+numALERT+"\n");
+            textGeneral.append("Operaciones ERROR: "+numERROR+"\n");
+        }else{
+            System.out.println("ERROR en CargarGeneralInfo, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso CargarGeneralInfo Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso CargarGeneralInfo Terminado con FALLO");
+    	}
+    }
+    
     
     
     
@@ -198,13 +288,13 @@ public class Monitor extends javax.swing.JFrame {
         textBitacora = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        textGrafico = new javax.swing.JTextArea();
+        textGeneral = new javax.swing.JTextArea();
         botonBACK = new javax.swing.JButton();
         botonNEXT = new javax.swing.JButton();
         textFecha = new javax.swing.JTextField();
         botonGO = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        textGeneral = new javax.swing.JTextArea();
+        textGrafico = new javax.swing.JTextArea();
         botonHOY = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -212,14 +302,17 @@ public class Monitor extends javax.swing.JFrame {
         jLabel1.setText("TECHNOTITLAN - MONITOR");
 
         textBitacora.setColumns(20);
+        textBitacora.setFont(new java.awt.Font("DialogInput", 0, 12)); // NOI18N
         textBitacora.setRows(5);
+        textBitacora.setTabSize(4);
         jScrollPane1.setViewportView(textBitacora);
 
         jLabel2.setText("Grafico de Alertas");
 
-        textGrafico.setColumns(20);
-        textGrafico.setRows(5);
-        jScrollPane2.setViewportView(textGrafico);
+        textGeneral.setColumns(20);
+        textGeneral.setFont(new java.awt.Font("DialogInput", 0, 12)); // NOI18N
+        textGeneral.setRows(5);
+        jScrollPane2.setViewportView(textGeneral);
 
         botonBACK.setText("<--");
         botonBACK.addActionListener(new java.awt.event.ActionListener() {
@@ -244,9 +337,10 @@ public class Monitor extends javax.swing.JFrame {
             }
         });
 
-        textGeneral.setColumns(20);
-        textGeneral.setRows(5);
-        jScrollPane3.setViewportView(textGeneral);
+        textGrafico.setColumns(20);
+        textGrafico.setFont(new java.awt.Font("DialogInput", 0, 12)); // NOI18N
+        textGrafico.setRows(5);
+        jScrollPane3.setViewportView(textGrafico);
 
         botonHOY.setText("HOY");
         botonHOY.addActionListener(new java.awt.event.ActionListener() {
@@ -350,13 +444,15 @@ public class Monitor extends javax.swing.JFrame {
 		//no hay condiciones Iniciales
 	//Comenzar Proceso//
         if(condiciones==true){
+            //Regargar General Info
+                CargarGeneralInfo();
+                
             //Recargar Bitacora
                 CargarBitacoraActual();
             
             //Recargar Grafico
-                CargarGraficoAlertas(4);
+                CargarGrafico();
             
-            //Regargar General Info
         }else{
             System.out.println("ERROR en Refresh, motivo: "+motivo);
 	}

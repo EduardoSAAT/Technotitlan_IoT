@@ -31,35 +31,27 @@ FECHA(22/1/2021)
 FIN_FECHA(22/1/2021)
 FECHA(23/1/2021)
 	EXITO  (01:37:01.399) - Se ha establecido conexion con el Controlador Central
-	ERROR  (01:44:01.516) - Presencia Controlador Central No detectada, realizando Resurekcion
-	ERROR  (01:45:01.572) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:31:28.967) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:32:00.119) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:33:27.890) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:34:00.491) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:35:19.403) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:36:00.449) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:36:55.659) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:37:00.663) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:37:35.370) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:38:00.370) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:38:51.860) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:39:00.842) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:39:12.959) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:40:01.039) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:40:53.372) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:43:01.450) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:44:20.096) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:45:00.093) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:46:35.850) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:47:01.834) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:48:13.602) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:53:01.705) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:53:45.667) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:55:01.708) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:55:32.716) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:56:00.730) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:56:00.835) - Se ha establecido conexion con el Controlador Central
-	ERROR  (02:57:00.854) - Presencia Controlador Central No detectada, realizando Resurekcion
-	EXITO  (02:57:00.960) - Se ha establecido conexion con el Controlador Central
+	EXITO  (19:56:55.369) - Se ha establecido conexion con el Controlador Central
+	EXITO  (19:58:58.729) - Se ha establecido conexion con el Controlador Central
+	EXITO  (19:59:00.838) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:04:00.165) - Se ha establecido conexion con el Controlador Central
+	ERROR  (20:05:00.180) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (20:05:14.162) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:09:37.539) - Se ha establecido conexion con el Controlador Central
+	ERROR  (20:11:01.522) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (20:11:21.679) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:15:01.721) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:24:17.633) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:25:15.095) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:25:50.056) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:26:43.546) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:28:30.458) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:29:47.794) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:34:55.069) - Se ha establecido conexion con el Controlador Central
+	ALERT  (20:25:50.056) - Se ha establecido conexion con el Controlador Central
+	ALERT  (20:26:43.546) - Se ha establecido conexion con el Controlador Central
+	ALERT  (20:28:30.458) - Se ha establecido conexion con el Controlador Central
+	EXITO  (20:36:11.735) - Se ha establecido conexion con el Controlador Central
+	ERROR  (20:37:01.713) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (20:37:11.861) - Se ha establecido conexion con el Controlador Central
 FIN_FECHA(23/1/2021)
