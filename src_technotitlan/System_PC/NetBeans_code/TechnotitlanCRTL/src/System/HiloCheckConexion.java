@@ -67,7 +67,7 @@ public class HiloCheckConexion extends Thread{
             //Entonces pedir la Resurekcion del Sistema//
             System.out.println("HiloCheckConexion: Presencia No detectada, realizando la resurekcion del sistema...");
             Menu.addBitacora("ERROR","Presencia Controlador Central No detectada, realizando Resurekcion");
-            Menu.Resurekcion();
+            main.m.Resurekcion();
         }else{
             System.out.println("HiloCheckConexion: Presencia Validada, continuando con el sitema");
         }

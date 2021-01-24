@@ -201,14 +201,20 @@ public class Monitor extends javax.swing.JFrame {
 		//no hay condiciones Iniciales
 	//Comenzar Proceso//
         if(condiciones==true){
+            //Preparando Variables
             Text bitacora = new Text(Menu.fileBitacoraName);
             int posA = bitacora.posLineLike("#FECHA#"+time.AlgoritmsT.getFechaActual()+"#","#");
             int posB = bitacora.posLineLike("#FIN#FECHA#"+time.AlgoritmsT.getFechaActual()+"#","#");
+            Text config = new Text(Menu.fileConfigName);
+            
             
             String line="";
             numEXITO=0;
             numERROR=0;
             numALERT=0;
+            
+            
+            //Conteo de Eventos
             for(int x=posA; x<=posB; x++){
                 line=bitacora.LeerLineaN(x);
                 
@@ -227,12 +233,17 @@ public class Monitor extends javax.swing.JFrame {
             }
             
             
+            
+            
             //Mensaje final//
             textGeneral.setText("");
+            textGeneral.append("SYSTEMA MONITOR TECHNOTITLAN\n");
             
-            textGeneral.append("Operaciones EXITO: "+numEXITO+"\n");
-            textGeneral.append("Operaciones ALERT: "+numALERT+"\n");
-            textGeneral.append("Operaciones ERROR: "+numERROR+"\n");
+            textGeneral.append("CONFIGURACION GENERAL"+"\t\t\t\tCONFIG ARDUINO"+"\t\tCONTEO EVENTOS\n");
+            textGeneral.append(config.getLineLike("#STATUS_CLOSE#","#")+"\t\t\t\tPUERTO("+Menu.PuertoArduino+")"+"\t\tOperaciones EXITO: "+numEXITO+"\n");
+            textGeneral.append(config.getLineLike("#TIME_REPEAT_SEND_OK_MENSAJE#","#")+"\tSERIAL("+Menu.SerialArduino+")"+"\t\tOperaciones ALERT: "+numALERT+"\n");
+            textGeneral.append(config.getLineLike("#MAX_TIME_WAIT_OK_REPLY#","#")+"\t\t"+"\t\t\t\t\tOperaciones ERROR: "+numERROR);
+            
         }else{
             System.out.println("ERROR en CargarGeneralInfo, motivo: "+motivo);
 	}
@@ -312,6 +323,8 @@ public class Monitor extends javax.swing.JFrame {
         textGeneral.setColumns(20);
         textGeneral.setFont(new java.awt.Font("DialogInput", 0, 12)); // NOI18N
         textGeneral.setRows(5);
+        textGeneral.setTabSize(4);
+        textGeneral.setToolTipText("");
         jScrollPane2.setViewportView(textGeneral);
 
         botonBACK.setText("<--");
@@ -360,12 +373,14 @@ public class Monitor extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(32, 32, 32)
+                                .addComponent(jLabel2))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 27, Short.MAX_VALUE)
+                                .addGap(0, 46, Short.MAX_VALUE)
                                 .addComponent(botonHOY)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(botonBACK)
@@ -389,13 +404,13 @@ public class Monitor extends javax.swing.JFrame {
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(botonBACK)
                         .addComponent(textFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(botonNEXT)
                         .addComponent(botonGO)
                         .addComponent(botonHOY))
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addContainerGap())
@@ -409,13 +424,7 @@ public class Monitor extends javax.swing.JFrame {
     }//GEN-LAST:event_botonHOYActionPerformed
 
     private void botonGOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGOActionPerformed
-        //CargarBitacora(textFecha.getText());
-        
-        try {
-            Menu.Arduino.killArduinoConnection();
-        } catch (Exception ex) {
-            Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        CargarBitacora(textFecha.getText());
     }//GEN-LAST:event_botonGOActionPerformed
 
     private void botonNEXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNEXTActionPerformed

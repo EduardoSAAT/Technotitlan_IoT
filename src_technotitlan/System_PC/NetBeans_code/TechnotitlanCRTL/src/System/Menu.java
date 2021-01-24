@@ -91,6 +91,7 @@ public class Menu extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         textStatusControlador = new javax.swing.JTextField();
         textStatusGeneral = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -102,6 +103,13 @@ public class Menu extends javax.swing.JFrame {
 
         jLabel2.setText("Status Controlador Central");
 
+        jButton3.setText("EXIT-SAFE");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -111,7 +119,8 @@ public class Menu extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -119,7 +128,7 @@ public class Menu extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(textStatusControlador, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
+                        .addComponent(textStatusControlador))
                     .addComponent(textStatusGeneral, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -127,7 +136,9 @@ public class Menu extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -142,6 +153,60 @@ public class Menu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        setStatusClose(true);
+        
+        //CerrarTodo
+        HiloCheckConetion.Detener();
+        monitor.dispose();
+        main.m.dispose();
+        try {
+            Arduino.killArduinoConnection();
+        } catch (ArduinoException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    
+    
+    
+    
+    /**
+     * Descripcion: Colocar el status de cerrar o abrir el archivo
+     *
+     * @param	status True CORRECTO y False INCORRECTO
+     */
+    public void setStatusClose(boolean status){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            Text config = new Text(Menu.fileConfigName);
+            int posLine = config.posLineLike("#STATUS_CLOSE#", "#");
+            
+            if(status==true){
+                config.RemplaceLineN(posLine,"\tSTATUS_CLOSE(CORRECTO)");
+            }else{
+                config.RemplaceLineN(posLine,"\tSTATUS_CLOSE(INCORRECTO)");
+            }
+        }else{
+            System.out.println("ERROR en setStatusClose, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso setStatusClose Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso setStatusClose Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -186,7 +251,7 @@ public class Menu extends javax.swing.JFrame {
      *
      * @return	String Error de algo o Exito
      */
-    public static String IniciarSystem (){
+    public String IniciarSystem (){
     //Variables Locales e Inicializacion//
         boolean condiciones=true;
 	String motivo="Indeterminado";
@@ -195,10 +260,12 @@ public class Menu extends javax.swing.JFrame {
     
 	//Comenzar Proceso//
         if(condiciones==true){
+            
             //IniciarMonitor//
                 IniciarMonitor();
             //IniciarManager//
                 
+            setStatusClose(false);
 	}else{
             System.out.println("ERROR en IniciarSystem, motivo: "+motivo+", valor regresado: "+salida);
 	}
@@ -302,7 +369,7 @@ public class Menu extends javax.swing.JFrame {
      *
      * 
      */
-    public static void Resurekcion(){
+    public void Resurekcion(){
     //Variables Locales e Inicializacion//
     boolean condiciones=true;
     String motivo="Indeterminado";
@@ -447,15 +514,15 @@ public class Menu extends javax.swing.JFrame {
             Archivos.Text config = new Text("Config.txt");
             
             //Seleccion del Modo de Configuracion//
-            String modo="DEFAULT";
+            String modo;
                 //Si el sistema no se cerro corectamente
                 String line = config.getLineLike("#STATUS_CLOSE#","#");
                 if(Cad.numOfContains(line,"INCORRECTO",true)>=1){
-                    //Entonces escoger el modo por DEFAULT
-                    modo="DEFAULT";
-                }else{
                     //Entonces escoger el modo LAST_STATUS
                     modo="LAST_STATUS";
+                }else{
+                    //Entonces escoger el modo por DEFAULT
+                    modo="DEFAULT";
                 }
             
             
@@ -493,16 +560,15 @@ public class Menu extends javax.swing.JFrame {
                 //Sistema de Iluminacion
                     
                 
-                
-                //Mandar Mensaje a Bitacora
-                addBitacora("EXITO","Se ha establecido la configuracion: "+modo);
             }else{
                 //Simplemente dejar el LAST como estaba
             }
             
-            
+            //Mandar Mensaje a Bitacora
+                addBitacora("EXITO","Se ha establecido la configuracion: "+modo);
+                
             //EnviarConfig al controlador//
-            
+            EnviarConfig();
 	}else{
             System.out.println("ERROR en ActualizarConfig, motivo: "+motivo+", valor regresado: "+salida);
 	}
@@ -517,7 +583,7 @@ public class Menu extends javax.swing.JFrame {
      * Descripcion: Enviar la configuracion de LAST_STATUS al Controlador CENTRAL
      *
      */
-    public void EnviarConfig(){
+    public static void EnviarConfig(){
     //Variables Locales e Inicializacion//
     boolean condiciones=true;
 	String motivo="Indeterminado";
@@ -814,6 +880,7 @@ public class Menu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private static javax.swing.JTextField textStatusControlador;
