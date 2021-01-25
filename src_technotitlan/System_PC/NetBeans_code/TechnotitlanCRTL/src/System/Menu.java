@@ -159,6 +159,7 @@ public class Menu extends javax.swing.JFrame {
         //CerrarTodo
         HiloCheckConetion.Detener();
         monitor.dispose();
+        manager.dispose();
         main.m.dispose();
         try {
             Arduino.killArduinoConnection();

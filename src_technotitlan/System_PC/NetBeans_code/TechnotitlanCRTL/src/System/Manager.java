@@ -5,6 +5,12 @@
  */
 package System;
 
+import Archivos.Text;
+import com.panamahitek.ArduinoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jssc.SerialPortException;
+
 /**
  *
  * @author Ing Lalux
@@ -31,19 +37,19 @@ public class Manager extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        botonSET = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        textUPS_DATA_CENTER = new javax.swing.JTextField();
+        botonUPS_DATA_CENTER = new javax.swing.JToggleButton();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jToggleButton2 = new javax.swing.JToggleButton();
+        textPOWER_RACK = new javax.swing.JTextField();
+        botonPOWER_RACK = new javax.swing.JToggleButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jToggleButton3 = new javax.swing.JToggleButton();
+        textPC_CENTRAL = new javax.swing.JTextField();
+        botonPC_CENTRAL = new javax.swing.JToggleButton();
         jLabel7 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        textPC_DATA = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         OK = new javax.swing.JToggleButton();
@@ -57,7 +63,7 @@ public class Manager extends javax.swing.JFrame {
         jToggleButton9 = new javax.swing.JToggleButton();
         jToggleButton10 = new javax.swing.JToggleButton();
         jToggleButton11 = new javax.swing.JToggleButton();
-        jToggleButton4 = new javax.swing.JToggleButton();
+        botonPC_DATA = new javax.swing.JToggleButton();
 
         jTextField1.setText("jTextField1");
 
@@ -69,36 +75,46 @@ public class Manager extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jButton1.setText("SET");
+        botonSET.setText("SET");
 
         jLabel3.setText("UPS_DATA_CENTER");
 
-        jTextField2.setText("jTextField2");
+        textUPS_DATA_CENTER.setText("jTextField2");
 
-        jToggleButton1.setText("ON/OFF");
+        botonUPS_DATA_CENTER.setText("ON/OFF");
+        botonUPS_DATA_CENTER.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonUPS_DATA_CENTERActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("POWER_RACK");
 
-        jTextField3.setText("jTextField3");
+        textPOWER_RACK.setText("jTextField3");
 
-        jToggleButton2.setText("ON/OFF");
+        botonPOWER_RACK.setText("ON/OFF");
+        botonPOWER_RACK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPOWER_RACKActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("=================== DATA CENTERS ======================");
 
         jLabel6.setText("PC_CENTRAL");
 
-        jTextField4.setText("jTextField4");
+        textPC_CENTRAL.setText("jTextField4");
 
-        jToggleButton3.setText("ON/OFF");
-        jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
+        botonPC_CENTRAL.setText("ON/OFF");
+        botonPC_CENTRAL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton3ActionPerformed(evt);
+                botonPC_CENTRALActionPerformed(evt);
             }
         });
 
         jLabel7.setText("PC_DATA");
 
-        jTextField5.setText("jTextField5");
+        textPC_DATA.setText("jTextField5");
 
         jLabel8.setText("=============== SISTEMA DE ILUMINACION ==================");
 
@@ -126,7 +142,7 @@ public class Manager extends javax.swing.JFrame {
 
         jToggleButton11.setText("OK");
 
-        jToggleButton4.setText("ON/OFF");
+        botonPC_DATA.setText("ON/OFF");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,7 +157,7 @@ public class Manager extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(botonSET, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4)
@@ -149,12 +165,12 @@ public class Manager extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-                            .addComponent(jTextField5))
+                            .addComponent(textPC_CENTRAL, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                            .addComponent(textPC_DATA))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jToggleButton3)
-                            .addComponent(jToggleButton4))
+                            .addComponent(botonPC_CENTRAL)
+                            .addComponent(botonPC_DATA))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -171,13 +187,13 @@ public class Manager extends javax.swing.JFrame {
                                 .addComponent(jToggleButton11))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(textUPS_DATA_CENTER, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(textPOWER_RACK, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jToggleButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(botonUPS_DATA_CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(botonPOWER_RACK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -199,7 +215,7 @@ public class Manager extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
+                    .addComponent(botonSET)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
@@ -207,8 +223,8 @@ public class Manager extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton1)
+                    .addComponent(textUPS_DATA_CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonUPS_DATA_CENTER)
                     .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(OK)
                     .addComponent(jToggleButton7))
@@ -216,8 +232,8 @@ public class Manager extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton2)
+                    .addComponent(textPOWER_RACK, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonPOWER_RACK)
                     .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToggleButton5)
                     .addComponent(jToggleButton6))
@@ -227,8 +243,8 @@ public class Manager extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButton3)
+                    .addComponent(textPC_CENTRAL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonPC_CENTRAL)
                     .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToggleButton8)
                     .addComponent(jToggleButton9))
@@ -236,11 +252,11 @@ public class Manager extends javax.swing.JFrame {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textPC_DATA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToggleButton10)
                     .addComponent(jToggleButton11)
-                    .addComponent(jToggleButton4))
+                    .addComponent(botonPC_DATA))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addContainerGap(55, Short.MAX_VALUE))
@@ -249,9 +265,68 @@ public class Manager extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+    private void botonPC_CENTRALActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPC_CENTRALActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton3ActionPerformed
+    }//GEN-LAST:event_botonPC_CENTRALActionPerformed
+
+    private void botonUPS_DATA_CENTERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonUPS_DATA_CENTERActionPerformed
+        try {
+            Menu.Arduino.sendData("CONFIG/UPS_DATA_CENTER(ON)");
+        } catch (ArduinoException ex) {
+            Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SerialPortException ex) {
+            Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_botonUPS_DATA_CENTERActionPerformed
+
+    private void botonPOWER_RACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPOWER_RACKActionPerformed
+        if(botonPOWER_RACK.isSelected()){
+            String mensajeON = "CONFIG/POWER_RACK(ON)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeON+"\n");
+                
+                //Mandar la configuracion al Archivo de configuracion
+                Archivos.Text config = new Text(Menu.fileConfigName);
+                int pos = config.posLineLike("#POWER_RACK#","#");
+                config.RemplaceLineN(pos,"\tPOWER_RACK(ON)");
+                
+                //Mandar el evento al Archivo de bitacora
+                Menu.addBitacora("EXITO", "Se configuro: "+mensajeON);
+                
+                //Indicar al HiloCheckConexion que aumente el tiempo de espera, para procesar esta solicitud//
+                Menu.HiloCheckConetion.ActualizarLastPresencia();
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            String mensajeOFF = "CONFIG/POWER_RACK(OFF)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeOFF+"\n");
+                
+                //Mandar la configuracion al Archivo de configuracion
+                Archivos.Text config = new Text(Menu.fileConfigName);
+                int pos = config.posLineLike("#POWER_RACK#","#");
+                config.RemplaceLineN(pos,"\tPOWER_RACK(OFF)");
+                
+                //Mandar el evento al Archivo de bitacora
+                Menu.addBitacora("EXITO", "Se configuro: "+mensajeOFF);
+                
+                //Indicar al HiloCheckConexion que aumente el tiempo de espera, para procesar esta solicitud//
+                Menu.HiloCheckConetion.ActualizarLastPresencia();
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+    }//GEN-LAST:event_botonPOWER_RACKActionPerformed
 
     /**
      * @param args the command line arguments
@@ -291,7 +366,11 @@ public class Manager extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton OK;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JToggleButton botonPC_CENTRAL;
+    private javax.swing.JToggleButton botonPC_DATA;
+    private javax.swing.JToggleButton botonPOWER_RACK;
+    private javax.swing.JButton botonSET;
+    private javax.swing.JToggleButton botonUPS_DATA_CENTER;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -302,24 +381,20 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton10;
     private javax.swing.JToggleButton jToggleButton11;
-    private javax.swing.JToggleButton jToggleButton2;
-    private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JToggleButton jToggleButton4;
     private javax.swing.JToggleButton jToggleButton5;
     private javax.swing.JToggleButton jToggleButton6;
     private javax.swing.JToggleButton jToggleButton7;
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToggleButton jToggleButton9;
+    private javax.swing.JTextField textPC_CENTRAL;
+    private javax.swing.JTextField textPC_DATA;
+    private javax.swing.JTextField textPOWER_RACK;
+    private javax.swing.JTextField textUPS_DATA_CENTER;
     // End of variables declaration//GEN-END:variables
 }
