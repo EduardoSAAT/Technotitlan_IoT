@@ -118,4 +118,23 @@ FECHA(24/1/2021)
 	EXITO  (02:53:54.529) - Se ha establecido la configuracion: LAST_STATUS
 	EXITO  (02:55:39.471) - Se ha establecido conexion con el Controlador Central
 	EXITO  (02:55:39.652) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:02:33.704) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:02:33.939) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:03:25.972) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:03:26.164) - Se ha establecido la configuracion: LAST_STATUS
+	ERROR  (18:04:00.880) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (18:04:01.036) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:04:01.174) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:06:42.266) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:06:42.471) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:07:22.553) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:07:22.749) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:14:44.612) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:14:44.952) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:32:43.556) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:32:43.901) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:33:40.994) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:33:41.392) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:34:29.885) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:34:30.244) - Se ha establecido la configuracion: DEFAULT
 FIN_FECHA(24/1/2021)

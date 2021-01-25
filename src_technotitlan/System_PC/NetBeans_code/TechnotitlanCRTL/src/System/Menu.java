@@ -264,6 +264,7 @@ public class Menu extends javax.swing.JFrame {
             //IniciarMonitor//
                 IniciarMonitor();
             //IniciarManager//
+                IniciarManager();
                 
             setStatusClose(false);
 	}else{
@@ -307,6 +308,31 @@ public class Menu extends javax.swing.JFrame {
     }
     
     
+    
+    
+     /**
+     * Descripcion: Iniciar el Manager del Sistema
+     *
+     * @return	String Error de algo o Exito
+     */
+    public static String IniciarManager(){
+    //Variables Locales e Inicializacion//
+        boolean condiciones=true;
+	String motivo="Indeterminado";
+        String salida="EXITO";
+    //Comprobar Condiciones Iniciales//
+    
+	//Comenzar Proceso//
+        if(condiciones==true){
+            //IniciarMonitor//
+                manager = new Manager();
+                manager.setVisible(true);
+	}else{
+            System.out.println("ERROR en IniciarMonitor, motivo: "+motivo+", valor regresado: "+salida);
+	}
+    //Terminar Proceso//
+        return salida;
+    }
     
     
     
