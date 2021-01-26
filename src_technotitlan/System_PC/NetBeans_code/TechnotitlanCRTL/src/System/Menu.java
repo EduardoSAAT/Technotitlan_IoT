@@ -26,12 +26,17 @@ import jssc.SerialPortException;
  */
 public class Menu extends javax.swing.JFrame {
     //Variables Globales para esta Clase//
-    public static String fileConfigName = "Config.txt";
-    public static String fileBitacoraName = "Bitacora.txt";
     public static String FechaActual = time.AlgoritmsT.getFechaActual();
     public static double TIME_REPEAT_SEND_OK_MENSAJE;
     public static double MAX_TIME_WAIT_OK_REPLY;
     public static double TIME_REPEAT_TRY_MAKECONEXION;
+    
+    
+    //Variables para los Archivos//
+    public static String fileConfigName = "Config.txt";
+    public static String fileBitacoraName = "Bitacora.txt";
+    public static Text archBitacora;
+    public static Text archConfig;
     
     //Variables del Arduino//
     public static com.panamahitek.PanamaHitek_Arduino Arduino;
@@ -57,6 +62,8 @@ public class Menu extends javax.swing.JFrame {
         
         //Iniciar el Sistema//
         String status = "";
+        archBitacora = new Text(fileBitacoraName);
+        archConfig = new Text(fileConfigName);
         
         status = CheckSystem();
         if(Cad.numOfContains(status,"ERROR",true)>=1){
@@ -405,7 +412,7 @@ public class Menu extends javax.swing.JFrame {
 	//Comenzar Proceso//
         if(condiciones==true){
             //Matar todos los procesos//
-            //manager.dispose();
+            manager.dispose();
             monitor.dispose();
             try {
                 Arduino.killArduinoConnection();
@@ -782,25 +789,23 @@ public class Menu extends javax.swing.JFrame {
 	//no hay condiciones Iniciales
 	//Comenzar Proceso//
         if(condiciones==true){
-            //Variables del Archivo//
-            Text bitacora = new Text(fileBitacoraName);
             String line=""; int posLine=0;
             
             //Comprobar si el registro que se va agregar cae en un bloque existente o hay que crear un nuevo bloque de timepo
             String fechaActual = time.AlgoritmsT.getFechaActual();
-            int posA=bitacora.posLineLike("#FECHA#"+fechaActual+"#","#");
+            int posA=archBitacora.posLineLike("#FECHA#"+fechaActual+"#","#");
             if(posA>=1){
                 //Entonces solo agregar el registro en esa posicion
-                int posB=bitacora.posLineLike("#FIN#FECHA#"+fechaActual+"#","#");
+                int posB=archBitacora.posLineLike("#FIN#FECHA#"+fechaActual+"#","#");
                 
                 String texto = "\t"+alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
-                bitacora.InsertLineN(posB,texto);
+                archBitacora.InsertLineN(posB,texto);
             }else{
                 //Entonces crear el nuevo bloque de registros//
-                bitacora.AgregarLine("FECHA("+fechaActual+")");
+                archBitacora.AgregarLine("FECHA("+fechaActual+")");
                 String texto = "\t"+alerta+"  ("+time.AlgoritmsT.getTimeActual()+") - "+mensaje;
-                bitacora.AgregarLine(texto);
-                bitacora.AgregarLine("FIN_FECHA("+fechaActual+")");
+                archBitacora.AgregarLine(texto);
+                archBitacora.AgregarLine("FIN_FECHA("+fechaActual+")");
             }
         }else{
             System.out.println("ERROR en addBitacora, motivo: "+motivo);
@@ -826,61 +831,89 @@ public class Menu extends javax.swing.JFrame {
             
             //ESCUCHAR, Si el Controlador Central manda un mensaje//
             if(Arduino.isMessageAvailable()){
-                //Definir la variable del Archivo//
-                    Archivos.Text config = new Text("Config.txt");
-                    int posA= config.posLineLike("#CONFIG#SYSTEM#LAST#STATUS#","#");
-                    int posB= config.posLineLike("#FIN#CONFIG##LAST#STATUS#","#");
+                //Definir la variable del Archivo Config//
+                    int posA= archConfig.posLineLike("#CONFIG#SYSTEM#LAST#STATUS#","#");
+                    int posB= archConfig.posLineLike("#FIN#CONFIG##LAST#STATUS#","#");
+                    
                 
                 //Leer el mensaje de Configuracion que nos entrego el Controlador//
                     String mensaje = Arduino.printMessage();
                     System.out.println("Listener: Recibido Arduino mensaje - "+mensaje);
                     
                     
-                //Si el mensaje es de CONFIG
-                if(Cad.numOfContains(mensaje,"CONFIG",true)>=1){
+                    
+                    
+                    
+                //Si el mensaje es de SET_CONFIG es recibir la notificacion de que algo cambio para reflejarlo en los archivos
+                if(Cad.numOfContains(mensaje,"SET_CONFIG",true)>=1){
                     //Tomar los Datos de Configuracion y enviarlos al Archivo Config.txt//
                     int posline;
                     String nuevaLinea;
                     
                     
                     //Configuracion del Sistema Electrico
-                        String UPS_DATA_CENTER = Cad.subCadCadACadB(mensaje, "UPS_DATA_CENTER(", ")");
-                            posline = config.posLineLikeBetween("%UPS_DATA_CENTER%","%",posA,posB);
-                            nuevaLinea="\t\tUPS_DATA_CENTER("+UPS_DATA_CENTER+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                        
+                        //Para el UPS_DATA_CENTER//
+                            if(Cad.numOfContains(mensaje,"UPS_DATA_CENTER",true)>=1){
+                                //Modificar el Archivo de configuracion//
+                                String UPS_DATA_CENTER = Cad.subCadCadACadB(mensaje, "UPS_DATA_CENTER(", ")");
+                                posline = archConfig.posLineLikeBetween("%UPS_DATA_CENTER%","%",posA,posB);
+                                nuevaLinea="\t\tUPS_DATA_CENTER("+UPS_DATA_CENTER+")";
+                                archConfig.RemplaceLineN(posline, nuevaLinea);
+
+                                //Modificar el Archivo de Bitacora//
+                                addBitacora("EXITO", "Se configuro:"+mensaje);
+                            }
                             
-                        String POWER_RACK = Cad.subCadCadACadB(mensaje, "POWER_RACK(", ")");
-                            posline = config.posLineLikeBetween("%POWER_RACK%","%",posA,posB);
-                            nuevaLinea="\t\tPOWER_RACK("+POWER_RACK+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
+                        //Para el POWER_RACK//
+                            if(Cad.numOfContains(mensaje,"POWER_RACK",true)>=1){
+                                //Modificar el Archivo de configuracion//
+                                String POWER_RACK = Cad.subCadCadACadB(mensaje, "POWER_RACK(", ")");
+                                posline = archConfig.posLineLikeBetween("%POWER_RACK%","%",posA,posB);
+                                nuevaLinea="\t\tPOWER_RACK("+POWER_RACK+")";
+                                archConfig.RemplaceLineN(posline, nuevaLinea);
+
+                                //Modificar el Archivo de Bitacora//
+                                addBitacora("EXITO", "Se configuro:"+mensaje);
+                            }  
+                    
                             
-                        
                     //Configuracion de Servidores//
-                        String PC_CENTRAL = Cad.subCadCadACadB(mensaje, "PC_CENTRAL(", ")");
-                            posline = config.posLineLikeBetween("%PC_CENTRAL%","%",posA,posB);
-                            nuevaLinea="\t\tPC_CENTRAL("+PC_CENTRAL+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
                             
+                        //Para el PC_CENTRAL//
+                            if(Cad.numOfContains(mensaje,"PC_CENTRAL",true)>=1){
+                                //Modificar el Archivo de configuracion//
+                                String PC_CENTRAL = Cad.subCadCadACadB(mensaje, "PC_CENTRAL(", ")");
+                                posline = archConfig.posLineLikeBetween("%PC_CENTRAL%","%",posA,posB);
+                                nuevaLinea="\t\tPC_CENTRAL("+PC_CENTRAL+")";
+                                archConfig.RemplaceLineN(posline, nuevaLinea);
+
+                                //Modificar el Archivo de Bitacora//
+                                addBitacora("EXITO", "Se configuro:"+mensaje);
+                            }
                             
-                        String PC_DATA = Cad.subCadCadACadB(mensaje, "PC_DATA(", ")");
-                            posline = config.posLineLikeBetween("%PC_DATA%","%",posA,posB);
-                            nuevaLinea="\t\tPC_DATA("+PC_DATA+")";
-                            config.RemplaceLineN(posline, nuevaLinea);
-                            
-                            
-                    //Configuracion de Ilumincacion
-                        
-                        
-                        
+                        //Para el PC_DATA//
+                            if(Cad.numOfContains(mensaje,"PC_DATA",true)>=1){
+                                //Modificar el Archivo de configuracion//
+                                String PC_DATA = Cad.subCadCadACadB(mensaje, "PC_DATA(", ")");
+                                posline = archConfig.posLineLikeBetween("%PC_DATA%","%",posA,posB);
+                                nuevaLinea="\t\tPC_DATA("+PC_DATA+")";
+                                archConfig.RemplaceLineN(posline, nuevaLinea);
+
+                                //Modificar el Archivo de Bitacora//
+                                addBitacora("EXITO", "Se configuro:"+mensaje);
+                            } 
+                    
                     //Despues de Tomar el mensaje
-                        //Agregar accion a la Bitacora//
-                            addBitacora("EXITO", mensaje);
-                            
                         //Pedir Refresh al Manager//
-                            
+                            manager.Refresh();
+                        
                         //Pedir Refresh al Monitor//
+                            monitor.Refresh();
+                            
+                        //Actualizar presencia del controlador por mensaje recibido
+                        HiloCheckConetion.ActualizarLastPresencia();
                 }
+                
                 
                 
                 //Para Actualizar la presencia del Controlador Central

@@ -336,6 +336,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="ON/OFF"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonPC_DATAActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

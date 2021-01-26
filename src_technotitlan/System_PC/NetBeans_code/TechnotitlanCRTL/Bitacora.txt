@@ -142,3 +142,43 @@ FECHA(24/1/2021)
 	EXITO  (23:44:06.177) - Se ha establecido conexion con el Controlador Central
 	EXITO  (23:44:06.564) - Se ha establecido la configuracion: DEFAULT
 FIN_FECHA(24/1/2021)
+FECHA(25/1/2021)
+	EXITO  (18:05:08.041) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:05:08.749) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:05:36.700) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:05:55.716) - Se configuro:SET_CONFIG/PC_CENTRAL(OFF)
+	EXITO  (18:14:33.139) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:14:33.530) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:15:01.724) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:15:29.209) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:15:44.867) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:18:47.104) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:18:47.504) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:19:09.738) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:19:21.730) - Se configuro:SET_CONFIG/PC_CENTRAL(OFF)
+	EXITO  (18:19:49.893) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:19:50.349) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:20:19.862) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:20:20.317) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:20:46.286) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:21:04.626) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:21:04.948) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:22:10.706) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:22:10.987) - Se ha establecido la configuracion: LAST_STATUS
+	ERROR  (18:24:15.583) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (18:25:04.992) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:25:05.349) - Se ha establecido la configuracion: LAST_STATUS
+	ERROR  (18:27:09.904) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (18:28:20.310) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:28:20.555) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:28:37.810) - Se configuro:SET_CONFIG/PC_CENTRAL(OFF)
+	EXITO  (18:29:02.661) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	ERROR  (18:31:15.349) - Presencia Controlador Central No detectada, realizando Resurekcion
+	EXITO  (18:31:35.603) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:31:35.808) - Se ha establecido la configuracion: LAST_STATUS
+	EXITO  (18:32:17.183) - Se ha establecido conexion con el Controlador Central
+	EXITO  (18:32:17.747) - Se ha establecido la configuracion: DEFAULT
+	EXITO  (18:32:46.247) - Se configuro:SET_CONFIG/PC_CENTRAL(OFF)
+	EXITO  (18:33:12.383) - Se configuro:SET_CONFIG/PC_CENTRAL(ON)
+	EXITO  (18:38:49.056) - Se configuro:SET_CONFIG/PC_CENTRAL(OFF)
+FIN_FECHA(25/1/2021)

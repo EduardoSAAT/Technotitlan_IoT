@@ -5,6 +5,7 @@
  */
 package System;
 
+import Algoritms.Cad;
 import Archivos.Text;
 import com.panamahitek.ArduinoException;
 import java.util.logging.Level;
@@ -22,6 +23,7 @@ public class Manager extends javax.swing.JFrame {
      */
     public Manager() {
         initComponents();
+        Refresh();
     }
 
     /**
@@ -143,6 +145,11 @@ public class Manager extends javax.swing.JFrame {
         jToggleButton11.setText("OK");
 
         botonPC_DATA.setText("ON/OFF");
+        botonPC_DATA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPC_DATAActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -266,17 +273,67 @@ public class Manager extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonPC_CENTRALActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPC_CENTRALActionPerformed
-        // TODO add your handling code here:
+        if(botonPC_CENTRAL.isSelected()){
+            String mensajeON = "CONFIG(DATA_CENTER)/PC_CENTRAL(ON)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeON+"\n");
+                
+                //Cambiar el estado de los botones
+                textPC_CENTRAL.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            String mensajeOFF = "CONFIG(DATA_CENTER)/PC_CENTRAL(OFF)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeOFF+"\n");
+                //Cambiar el estado de los botones
+                textPC_CENTRAL.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_botonPC_CENTRALActionPerformed
 
     private void botonUPS_DATA_CENTERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonUPS_DATA_CENTERActionPerformed
-        try {
-            Menu.Arduino.sendData("CONFIG/UPS_DATA_CENTER(ON)");
-        } catch (ArduinoException ex) {
-            Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SerialPortException ex) {
-            Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+        
+        if(botonUPS_DATA_CENTER.isSelected()){
+            String mensajeON = "CONFIG(ELECTRIC)/UPS_DATA_CENTER(ON)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeON+"\n");
+                
+                //Cambiar el estado de los botones
+                textUPS_DATA_CENTER.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            String mensajeOFF = "CONFIG(ELECTRIC)/UPS_DATA_CENTER(OFF)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeOFF+"\n");
+                //Cambiar el estado de los botones
+                textUPS_DATA_CENTER.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
     }//GEN-LAST:event_botonUPS_DATA_CENTERActionPerformed
 
     private void botonPOWER_RACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPOWER_RACKActionPerformed
@@ -286,16 +343,9 @@ public class Manager extends javax.swing.JFrame {
             try {
                 Menu.Arduino.sendData(mensajeON+"\n");
                 
-                //Mandar la configuracion al Archivo de configuracion
-                Archivos.Text config = new Text(Menu.fileConfigName);
-                int pos = config.posLineLike("#POWER_RACK#","#");
-                config.RemplaceLineN(pos,"\tPOWER_RACK(ON)");
+                //Cambiar el estado de los botones
+                textPOWER_RACK.setText("CONFIG...");
                 
-                //Mandar el evento al Archivo de bitacora
-                Menu.addBitacora("EXITO", "Se configuro: "+mensajeON);
-                
-                //Indicar al HiloCheckConexion que aumente el tiempo de espera, para procesar esta solicitud//
-                Menu.HiloCheckConetion.ActualizarLastPresencia();
             } catch (ArduinoException ex) {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SerialPortException ex) {
@@ -306,17 +356,8 @@ public class Manager extends javax.swing.JFrame {
             
             try {
                 Menu.Arduino.sendData(mensajeOFF+"\n");
-                
-                //Mandar la configuracion al Archivo de configuracion
-                Archivos.Text config = new Text(Menu.fileConfigName);
-                int pos = config.posLineLike("#POWER_RACK#","#");
-                config.RemplaceLineN(pos,"\tPOWER_RACK(OFF)");
-                
-                //Mandar el evento al Archivo de bitacora
-                Menu.addBitacora("EXITO", "Se configuro: "+mensajeOFF);
-                
-                //Indicar al HiloCheckConexion que aumente el tiempo de espera, para procesar esta solicitud//
-                Menu.HiloCheckConetion.ActualizarLastPresencia();
+                //Cambiar el estado de los botones
+                textPOWER_RACK.setText("CONFIG...");
                 
             } catch (ArduinoException ex) {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
@@ -328,6 +369,124 @@ public class Manager extends javax.swing.JFrame {
         
     }//GEN-LAST:event_botonPOWER_RACKActionPerformed
 
+    private void botonPC_DATAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPC_DATAActionPerformed
+        if(botonPC_DATA.isSelected()){
+            String mensajeON = "CONFIG/PC_DATA(ON)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeON+"\n");
+                
+                //Cambiar el estado de los botones
+                textPC_DATA.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            String mensajeOFF = "CONFIG/PC_DATA(OFF)";
+            
+            try {
+                Menu.Arduino.sendData(mensajeOFF+"\n");
+                //Cambiar el estado de los botones
+                textPC_DATA.setText("CONFIG...");
+                
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_botonPC_DATAActionPerformed
+
+    
+    
+    
+    /**
+     * Descripcion: Regarcar el manager conforme a los datos de los archivos
+     *
+     */
+    public void Refresh(){
+    //Variables Locales e Inicializacion//
+    boolean condiciones=true;
+	String motivo="Indeterminado";
+    //Comprobar Condiciones Iniciales//
+		//no hay condiciones Iniciales
+	//Comenzar Proceso//
+        if(condiciones==true){
+            Text config = new Text(Menu.fileConfigName);
+            int posA = config.posLineLike("#CONFIG#LAST#STATUS#","#");
+            int posB = config.posLineLike("#FIN#CONFIG#LAST#STATUS#","#");
+            String line="";
+            String status="";
+            
+            
+            //Configuracion del sistema electrico
+                //Configuracion del UPS_DATA_CENTER
+                    line = config.getLineLikeBetween("#UPS_DATA_CENTER#", "#", posA,posB);
+                    status = Cad.subCadCadACadB(line,"(",")");
+                    
+                    if(Cad.Equals(status,"ON",false)){
+                        botonUPS_DATA_CENTER.setSelected(true);
+                        textUPS_DATA_CENTER.setText("ON");
+                    }else{
+                        botonUPS_DATA_CENTER.setSelected(false);
+                        textUPS_DATA_CENTER.setText("OFF");
+                    }
+                
+                //Configuracion del POWER_RACK
+                    line = config.getLineLikeBetween("#POWER_RACK#", "#",posA,posB);
+                    status = Cad.subCadCadACadB(line,"(",")");
+                    
+                    if(Cad.Equals(status,"ON",false)){
+                        botonPOWER_RACK.setSelected(true);
+                        textPOWER_RACK.setText("ON");
+                    }else{
+                        botonPOWER_RACK.setSelected(false);
+                        textPOWER_RACK.setText("OFF");
+                    }
+            
+            //Configuracion del data center
+                //Configuracion de DATA_CENTRAL
+                    line = config.getLineLikeBetween("#PC_CENTRAL#", "#",posA,posB);
+                    status = Cad.subCadCadACadB(line,"(",")");
+                    
+                    if(Cad.Equals(status,"ON",false)){
+                        botonPC_CENTRAL.setSelected(true);
+                        textPC_CENTRAL.setText("ON");
+                    }else{
+                        botonPC_CENTRAL.setSelected(false);
+                        textPC_CENTRAL.setText("OFF");
+                    }
+                
+                //configuracion de PC_DATA
+                    line = config.getLineLikeBetween("#PC_DATA#", "#",posA,posB);
+                    status = Cad.subCadCadACadB(line,"(",")");
+                    
+                    if(Cad.Equals(status,"ON",false)){
+                        botonPC_DATA.setSelected(true);
+                        textPC_DATA.setText("ON");
+                    }else{
+                        botonPC_DATA.setSelected(false);
+                        textPC_DATA.setText("OFF");
+                    }
+            
+            //configuracion de la ilumnacion
+        }else{
+            System.out.println("ERROR en Refresh, motivo: "+motivo);
+	}
+    //Terminar Proceso//
+    	if(condiciones==true){
+            System.out.println("Proceso Refresh Terminado con EXITO");
+    	}else{
+            System.out.println("Proceso Refresh Terminado con FALLO");
+    	}
+    }
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */

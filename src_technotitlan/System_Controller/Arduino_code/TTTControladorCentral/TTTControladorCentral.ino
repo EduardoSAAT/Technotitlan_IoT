@@ -221,10 +221,37 @@ bool CheckElectricSystem(){
 
 void Reconfig(String data){
   //Sistema electrico
-
-  //Sistema de Iluminacion
-
-  //Sistema de DataCenter
+  if(data.indexOf("(ELECTRIC)")>=0){
+    //Config UPS_DATA_CENTER
+      if(data.indexOf("UPS_DATA_CENTER")>=0){
+        
+      }
+    //Config POWER_RACK
+      if(data.indexOf("POWER_RACK")>=0){
+        
+      }
+  }else{
+    //Sistema de DataCenter
+    if(data.indexOf("(DATA_CENTER)")>=0){
+      //Config PC_CENTRAL
+        if(data.indexOf("PC_CENTRAL")>=0){
+          if(data.indexOf("(ON)")>=0){
+            setConfig_PC_CENTRAL(true);
+          }else{
+            setConfig_PC_CENTRAL(false);
+          }
+        }
+      //Config PC_DATA
+        if(data.indexOf("PC_DATA")>=0){
+          
+        }
+    }else{
+      //Sistema de Iluminacion
+      if(data.indexOf("(ILUMINACION)")>=0){
+        //Config.....
+      }  
+    }
+  }
 }
 
 
@@ -242,11 +269,14 @@ void setConfig_PC_CENTRAL(bool state){
       digitalWrite(pinPC_CENTRAL, LOW);
 
       //Esperar 10mins, en lo que el PC enciende e Inicia los Sistemas para continuar
-      delay(600000);
+      delay(6000);
+
+      //Mandar la instruccion de Endendido
+      Serial.println("SET_CONFIG/PC_CENTRAL(ON)");
     }
   }else{
     //Mandar la instruccion de Apagado
     PC_CENTRAL==false;
-    Serial.println("CONFIG_PC_CENTRAL_OFF");  
+    Serial.println("SET_CONFIG/PC_CENTRAL(OFF)");  
   }
 }
