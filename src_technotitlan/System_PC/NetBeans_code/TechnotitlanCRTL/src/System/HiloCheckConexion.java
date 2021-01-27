@@ -43,7 +43,7 @@ public class HiloCheckConexion extends Thread{
             
             //Espera para pedir Anuncie su presencia otra vez
             try {
-                this.sleep((long) Menu.TIME_REPEAT_SEND_OK_MENSAJE);
+                HiloCheckConexion.sleep((long) Menu.TIME_REPEAT_SEND_OK_MENSAJE);
             } catch (InterruptedException ex) {
                 Logger.getLogger(HiloCheckConexion.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -60,6 +60,7 @@ public class HiloCheckConexion extends Thread{
     //Comprobar el tiempo que ha pasado desde que se detecto la ultima presencia del Controlador Central
     public void CheckPresenciaControlador(){
         System.out.println("HiloCheckConexion: Verificando la presencia del Controlador Central");
+        System.out.println("LAST PRECENCIA:"+timeLastPresencia+"     ACTUAL:"+time.AlgoritmsT.getTimeActual());
         double diferencia = time.AlgoritmsT.calculeTime(time.AlgoritmsT.getTimeActual(),"-", timeLastPresencia);
         
         //Analizar diferencia, si es mayor a X timepo, entonces el controlador central perdio conexion//
@@ -69,7 +70,7 @@ public class HiloCheckConexion extends Thread{
             Menu.addBitacora("ERROR","Presencia Controlador Central No detectada, realizando Resurekcion");
             main.m.Resurekcion();
         }else{
-            System.out.println("HiloCheckConexion: Presencia Validada, continuando con el sitema");
+            System.out.println("HiloCheckConexion: Presencia Validada, Diferencia:"+diferencia+", continuando con el sitema");
         }
     }
     

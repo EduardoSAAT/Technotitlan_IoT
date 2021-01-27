@@ -634,28 +634,46 @@ public class Menu extends javax.swing.JFrame {
                 int posA= config.posLineLike("#CONFIG#SYSTEM#LAST#STATUS#","#");
                 int posB= config.posLineLike("#FIN#CONFIG##LAST#STATUS#","#");
                 
+                
+                //Enviar primer mensaje para ignorar - Util en caso de RESUREKCION activado por el Controlador Central
+                Arduino.sendData("OK-Continue\n");
+                //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
+                
                 //Sistema electrico
                     //Para el UPS_DATA_CENTER
                         mensaje = config.getLineLikeBetween("#UPS_DATA_CENTER#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje+"\n";
+                        mensaje = "CONFIG(ELECTRIC)/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
+                        
+                        //Esperar el mismo tiempo que send_OK_
+                        //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
                     
                     //Para el POWER_RACK
                         mensaje = config.getLineLikeBetween("#POWER_RACK#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje+"\n";
+                        mensaje = "CONFIG(ELECTRIC)/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
+                        
+                        //Esperar el mismo tiempo que send_OK_
+                        //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
                 
                 //Sistema Data Center
                     //Para PC_CENTRAL
                         mensaje = config.getLineLikeBetween("#PC_CENTRAL#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje+"\n";
+                        mensaje = "CONFIG(DATA_CENTER)/"+"PC_CENTRAL(ON)"+"\n";
                         Arduino.sendData(mensaje);
-                    
+                        
+                        //Esperar el mismo tiempo que send_OK_
+                        //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
+                        Menu.Arduino.sendData("OK-Continue\n");
+                        //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
                     //Para PC_DATA
                         mensaje = config.getLineLikeBetween("#PC_DATA#","#", posA, posB);
-                        mensaje = "CONFIG/"+mensaje+"\n";
+                        mensaje = "CONFIG(DATA_CENTER)/"+mensaje+"\n";
                         Arduino.sendData(mensaje);
-                
+                        
+                        //Esperar el mismo tiempo que send_OK_
+                        //Thread.sleep((long) TIME_REPEAT_SEND_OK_MENSAJE);
+                        
                 //Sistema de Ilumincacion
                 
                 
@@ -902,16 +920,20 @@ public class Menu extends javax.swing.JFrame {
                                 //Modificar el Archivo de Bitacora//
                                 addBitacora("EXITO", "Se configuro:"+mensaje);
                             } 
-                    
-                    //Despues de Tomar el mensaje
-                        //Pedir Refresh al Manager//
-                            manager.Refresh();
-                        
-                        //Pedir Refresh al Monitor//
-                            monitor.Refresh();
                             
+                    //Despues de cada mensaje de confiouracion
+                        //Pedir Refresh al Manager//
+                            if(manager.isVisible()){
+                                manager.Refresh();
+                            }
+
+                        //Pedir Refresh al Monitor//
+                            if(monitor.isVisible()){
+                                monitor.Refresh();
+                            }
+
                         //Actualizar presencia del controlador por mensaje recibido
-                        HiloCheckConetion.ActualizarLastPresencia();
+                            HiloCheckConetion.ActualizarLastPresencia();
                 }
                 
                 
@@ -920,6 +942,27 @@ public class Menu extends javax.swing.JFrame {
                 if(Cad.numOfContains(mensaje,"OK-Recibido",true)>=1){
                     System.out.println("Listener: Se ha detectado la presencia del Controlador Central");
                     HiloCheckConetion.ActualizarLastPresencia();
+                }
+                
+                //Para Mensajes de ALERTA
+                if(Cad.numOfContains(mensaje,"ALERTA",true)>=1){
+                    //Mandar el mensaje de ALERTA a la bitacora
+                    addBitacora("ALERTA", mensaje);
+                    
+                    
+                    //Despues de cada mensaje de confiouracion
+                        //Pedir Refresh al Manager//
+                            if(manager.isVisible()){
+                                manager.Refresh();
+                            }
+
+                        //Pedir Refresh al Monitor//
+                            if(monitor.isVisible()){
+                                monitor.Refresh();
+                            }
+
+                        //Actualizar presencia del controlador por mensaje recibido
+                            HiloCheckConetion.ActualizarLastPresencia();
                 }
             }
             

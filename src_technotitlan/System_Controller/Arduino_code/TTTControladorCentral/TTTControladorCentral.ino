@@ -2,9 +2,15 @@
 String ms;
 
 //CONFIG_SYSTEM
-  //Metadata//
-    String Fecha;
-    String Hora;
+  //Resurekcion - System//
+    long timeLastRespond;
+    long timeActual;
+    long diference;
+    long timeMaxWait;
+
+  //Sistema de enfriamiento//
+    
+    
     
   //Sistema Electrico - CONFIG_ELECTRICIDAD//
     bool FUENTE_CFE;
@@ -57,9 +63,10 @@ void setup() {
 
 
 void loop() {
-  //Evaluar si la conexion serial funciona
+  //Evaluar su hay algun mensaje en el Serial
   if(Serial.available()){
-    //Si la conexion funciona hacer funciones de Monitoreo y Reconfig
+    //Actualizar el tiempo de este ultimo mensaje
+    timeLastRespond = millis();
 
     //Leer el mensaje del monitor Serial
     ms = Serial.readStringUntil("\n");
@@ -77,15 +84,15 @@ void loop() {
       }
     }
 
-  //Si la conexion no funciona, verificar si es correcto y hay que resucitar el sistema
+  //Si no hay ningun mensaje en el Serial
   }else{
     //Verificar PC_CENTRAL//
     if(PC_CENTRAL==false){
       //Solo hacer funciones de Monitoreo
       Monitoreo();
     }else{
-      //Intentar Encender el PC_CENTRAL//
-      ResurekcionPC_MASTER();
+      //Evaluar la resurekcion del sistema
+      EvaluarResurekcion();
     }
   }
 }
@@ -111,9 +118,11 @@ void InicializarSistema(){
 
 void setDefaultConfig(){
   //Colocar la configuracion por defecto al Sistema
+
   //Metadata//
-    String Fecha="1/1/2020";
-    String Hora="00:01";
+    timeMaxWait = 120000;
+    timeActual = millis();
+    timeLastRespond = timeActual;
     
   //Sistema Electrico - CONFIG_ELECTRICIDAD//
     bool FUENTE_PODER=false;
@@ -129,6 +138,17 @@ void setDefaultConfig(){
     bool LUZ_LAB_PASILLO_A=false;
     bool LUZ_LAB_PASILLO_B=false;
     bool LUZ_LAB_BANO=false;
+}
+
+
+void EvaluarResurekcion(){
+    timeActual = millis();
+    diference = timeLastRespond-timeActual;
+
+    if(diference>timeMaxWait){
+      //Mandar Resurekcion//
+      ResurekcionPC_MASTER();
+    }
 }
 
 
@@ -222,15 +242,26 @@ bool CheckElectricSystem(){
 void Reconfig(String data){
   //Sistema electrico
   if(data.indexOf("(ELECTRIC)")>=0){
+    
     //Config UPS_DATA_CENTER
       if(data.indexOf("UPS_DATA_CENTER")>=0){
-        
+        if(data.indexOf("(ON)")>=0){
+          setConfigUPS_DATA_CENTER(true);
+        }else{
+          setConfigUPS_DATA_CENTER(false);
+        }
       }
+      
     //Config POWER_RACK
       if(data.indexOf("POWER_RACK")>=0){
-        
+        if(data.indexOf("(ON)")>=0){
+          setConfigPOWER_RACK(true);
+        }else{
+          setConfigPOWER_RACK(false);
+        }
       }
   }else{
+    
     //Sistema de DataCenter
     if(data.indexOf("(DATA_CENTER)")>=0){
       //Config PC_CENTRAL
@@ -241,19 +272,67 @@ void Reconfig(String data){
             setConfig_PC_CENTRAL(false);
           }
         }
+      
       //Config PC_DATA
         if(data.indexOf("PC_DATA")>=0){
-          
+          if(data.indexOf("(ON)")>=0){
+            setConfig_PC_DATA(true);
+          }else{
+            setConfig_PC_DATA(false);
+          }
         }
+        
     }else{
+      
       //Sistema de Iluminacion
       if(data.indexOf("(ILUMINACION)")>=0){
         //Config.....
       }  
+      
     }
   }
 }
 
+
+
+void setConfigUPS_DATA_CENTER(bool state){
+    if(state==true){
+      digitalWrite(pinUPS_DATA_CENTER, HIGH);
+      UPS_DATA_CENTER = true;
+      Serial.println("SET_CONFIG/UPS_DATA_CENTER(ON)");
+    }else{
+      //Comprobar previamente que los sistemas que dependen de este, esten apagados
+      if((PC_CENTRAL == false) && (PC_DATA == false)){
+        //Mandar a apagar el UPS
+        digitalWrite(pinUPS_DATA_CENTER, LOW);
+        UPS_DATA_CENTER = false;
+        Serial.println("SET_CONFIG/UPS_DATA_CENTER(OFF)");
+      }else{
+        //Mandar mensaje de alerta, imposible apagar
+        if(PC_DATA == true){
+          Serial.println("ALERTA - Imposible apagar UPS_DATA_CENTER: Sistema dependiente ACTIVO: PC_DATA"); 
+        }
+        if(PC_CENTRAL == true){
+          Serial.println("ALERTA - Imposible apagar UPS_DATA_CENTER: Sistema dependiente ACTIVO: PC_CENTRAL"); 
+        }
+      }
+    }
+}
+
+
+void setConfigPOWER_RACK(bool state){
+    //Comprobar previamente que los sistemas que dependen de este, esten apagados
+    if(state==true){
+      digitalWrite(pinPOWER_RACK, HIGH);
+      POWER_RACK = true;
+      Serial.println("SET_CONFIG/POWER_RACK(ON)");
+    }else{
+      //Mandar a apagar el UPS
+      digitalWrite(pinPOWER_RACK, LOW);
+      POWER_RACK = false;
+      Serial.println("SET_CONFIG/POWER_RACK(OFF)");
+    }
+}
 
 
 void setConfig_PC_CENTRAL(bool state){
@@ -261,22 +340,46 @@ void setConfig_PC_CENTRAL(bool state){
     //Mandar la instruccion de Encedido
     if(PC_CENTRAL==true){
       //No hay necesidad, de reencender, ya esta encendido
+      Serial.println("SET_CONFIG-PC_CENTRAL(ON)PRUEBA");
     }else{
       //Entonces encender//
-      PC_CENTRAL==true;
+      PC_CENTRAL=true;
       digitalWrite(pinPC_CENTRAL, HIGH);
       delay(800);
       digitalWrite(pinPC_CENTRAL, LOW);
 
-      //Esperar 10mins, en lo que el PC enciende e Inicia los Sistemas para continuar
-      delay(6000);
-
-      //Mandar la instruccion de Endendido
-      Serial.println("SET_CONFIG/PC_CENTRAL(ON)");
+      //Esperar a leer algun mensaje
+      Serial.readStringUntil("\n");
+      Serial.println("SET_CONFIG/PC_CENTRAL(ON)"); 
     }
   }else{
     //Mandar la instruccion de Apagado
-    PC_CENTRAL==false;
+    PC_CENTRAL=false;
     Serial.println("SET_CONFIG/PC_CENTRAL(OFF)");  
+  }
+}
+
+
+
+void setConfig_PC_DATA(bool state){
+  if(state==true){
+    //Mandar la instruccion de Encedido
+    if(PC_DATA==true){
+      //No hay necesidad, de reencender, ya esta encendido
+      Serial.println("SET_CONFIG/PC_DATA(ON)");
+    }else{
+      //Entonces encender//
+      PC_DATA=true;
+      digitalWrite(pinPC_DATA, HIGH);
+      delay(800);
+      digitalWrite(pinPC_DATA, LOW);
+
+      //Mandar la instruccion de Endendido
+        Serial.println("SET_CONFIG/PC_DATA(ON)");
+    }
+  }else{
+    //Mandar la instruccion de Apagado
+    PC_DATA=false;
+    Serial.println("SET_CONFIG/PC_DATA(OFF)");  
   }
 }

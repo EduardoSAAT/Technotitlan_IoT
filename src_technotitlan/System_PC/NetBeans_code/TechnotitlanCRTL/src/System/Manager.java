@@ -278,9 +278,9 @@ public class Manager extends javax.swing.JFrame {
             
             try {
                 Menu.Arduino.sendData(mensajeON+"\n");
-                
                 //Cambiar el estado de los botones
                 textPC_CENTRAL.setText("CONFIG...");
+                
                 
             } catch (ArduinoException ex) {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
@@ -338,7 +338,7 @@ public class Manager extends javax.swing.JFrame {
 
     private void botonPOWER_RACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPOWER_RACKActionPerformed
         if(botonPOWER_RACK.isSelected()){
-            String mensajeON = "CONFIG/POWER_RACK(ON)";
+            String mensajeON = "CONFIG(ELECTRIC)/POWER_RACK(ON)";
             
             try {
                 Menu.Arduino.sendData(mensajeON+"\n");
@@ -352,7 +352,7 @@ public class Manager extends javax.swing.JFrame {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
-            String mensajeOFF = "CONFIG/POWER_RACK(OFF)";
+            String mensajeOFF = "CONFIG(ELECTRIC)/POWER_RACK(OFF)";
             
             try {
                 Menu.Arduino.sendData(mensajeOFF+"\n");
@@ -371,7 +371,7 @@ public class Manager extends javax.swing.JFrame {
 
     private void botonPC_DATAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPC_DATAActionPerformed
         if(botonPC_DATA.isSelected()){
-            String mensajeON = "CONFIG/PC_DATA(ON)";
+            String mensajeON = "CONFIG(DATA_CENTER)/PC_DATA(ON)";
             
             try {
                 Menu.Arduino.sendData(mensajeON+"\n");
@@ -385,7 +385,7 @@ public class Manager extends javax.swing.JFrame {
                 Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
-            String mensajeOFF = "CONFIG/PC_DATA(OFF)";
+            String mensajeOFF = "CONFIG(DATA_CENTER)/PC_DATA(OFF)";
             
             try {
                 Menu.Arduino.sendData(mensajeOFF+"\n");
