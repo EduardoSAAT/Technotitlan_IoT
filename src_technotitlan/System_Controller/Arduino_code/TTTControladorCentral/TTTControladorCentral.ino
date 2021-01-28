@@ -8,23 +8,43 @@ String ms;
     long diference;
     long timeMaxWait;
 
-  //Sistema de enfriamiento//
-    
-    
+  //Sistema de Enfriamiento//
+    long timeLastFrio;
+    long timeActualFrio;
+    long diferenceFrio;
+    long timeWaitFrio;
+    long timeStillFrio;
+    long timeLastStillFrio;
+    long timeActualStillFrio;
+    long diferenceStillFrio;
+    bool VENTILADOR;
+    int pinVENTILADOR=1;
+
+  //Sistema de Timbres y Alarmas - Seguridad//
+    long timeLastVoice;
+    long timeActualVoice;
+    long diferenceVoice;
+    long timeStillVoice;
+    long timeLastStillVoice;
+    long timeActualStillVoice;
+    long diferenceStillVoice;
+    bool BOCINA;
+    int pinTIMBRE=2;
+    int pinBOCINA=3;
     
   //Sistema Electrico - CONFIG_ELECTRICIDAD//
     bool FUENTE_CFE;
-      int pinFUENTE_CFE=1;
+      int pinFUENTE_CFE=4;
     bool UPS_DATA_CENTER;
-      int pinUPS_DATA_CENTER=2;
+      int pinUPS_DATA_CENTER=5;
     bool POWER_RACK;
-      int pinPOWER_RACK=3;
+      int pinPOWER_RACK=6;
       
   //Servidores - CONFIG_SERVERS//
     bool PC_CENTRAL;
-      int pinPC_CENTRAL=4;
+      int pinPC_CENTRAL=7;
     bool PC_DATA;
-      int pinPC_DATA=5;
+      int pinPC_DATA=8;
   
   //Sistema de Ilumniacion - CONFIG_ILUMINACION//
     bool LUZ_LAB_MASTER;
@@ -55,6 +75,13 @@ void setup() {
   //Servidores - CONFIG_SERVERS//
     pinMode(pinPC_CENTRAL,OUTPUT);
     pinMode(pinPC_DATA,OUTPUT);
+
+  //Sistema de enfriamiento//
+    pinMode(pinVENTILADOR,OUTPUT);
+
+  //Sistema de Timbre y Alarmas//
+    pinMode(pinTIMBRE,INPUT);
+    pinMode(pinBOCINA,OUTPUT);
 
   //Inicializar Sistema//
   InicializarSistema();
@@ -119,11 +146,30 @@ void InicializarSistema(){
 void setDefaultConfig(){
   //Colocar la configuracion por defecto al Sistema
 
-  //Metadata//
+  //Resurekcion - System//
     timeMaxWait = 120000;
     timeActual = millis();
+    diference = 0;
     timeLastRespond = timeActual;
-    
+
+  //Sistema de enfriamiento//
+    VENTILADOR = false;
+    timeLastFrio = timeActual;
+    timeActualFrio = timeActual;
+    timeWaitFrio=3600000;
+    timeStillFrio=120000;
+    diferenceFrio = 0;
+    timeLastStillFrio=timeActual;
+    timeActualStillFrio=timeActual;
+    diferenceStillFrio=0;
+
+  //Sistema de Timbres y Alarmas//
+    timeLastVoice=timeActual;
+    timeActualVoice=timeActual;
+    diferenceVoice=0;
+    timeStillVoice=15000;
+    BOCINA=false;
+   
   //Sistema Electrico - CONFIG_ELECTRICIDAD//
     bool FUENTE_PODER=false;
     bool POWER_RACK=false;
@@ -180,22 +226,28 @@ void ResurekcionPC_MASTER(){
 
 void Monitoreo(){
   //Sistema electrico
+  CheckElectricSystem();
 
   //Sistema de Timbres
-
-  //Sistema de Iluminacion
-
+  CheckTimbreSystem();
+  CheckBOCINA();
+  
+  
   //Sistema de Enfriamiento
+  CheckEnfriamientoSystem();
+  
+  //Sistema de Iluminacion
 }
 
 
-//Evaluar si el Sistema Electrico Funciona con Estabilidad//
+
+//Evaluar la estabilidad del sistema electrico de la CFE//
 bool CheckElectricSystemEstability(){ 
   bool sondeo1=false;
   bool sondeo2=false;
   bool sondeo3=false;
   
-  if(CheckElectricSystem()==true){
+  if(CheckElectricCFE()==true){
     sondeo1=true;
   }else{
     sondeo1=false;  
@@ -203,7 +255,7 @@ bool CheckElectricSystemEstability(){
   
   //Esperar 5 Minutos para la siguiente evaluacion
   delay(300000);
-  if(CheckElectricSystem()==true){
+  if(CheckElectricCFE()==true){
     sondeo2=true;
   }else{
     sondeo2=false;  
@@ -211,7 +263,7 @@ bool CheckElectricSystemEstability(){
 
   //Esperar 5 Minutos para la siguiente evaluacion
   delay(300000);
-  if(CheckElectricSystem()==true){
+  if(CheckElectricCFE()==true){
     sondeo3=true;
   }else{
     sondeo3=false;  
@@ -227,7 +279,7 @@ bool CheckElectricSystemEstability(){
 
 
 //Evaluar el Sistema Electrico Principal en el Momento CFE//
-bool CheckElectricSystem(){ 
+bool CheckElectricCFE(){ 
   if(digitalRead(pinFUENTE_CFE) == HIGH){
     return true;
   }else{
@@ -235,6 +287,73 @@ bool CheckElectricSystem(){
   }
 }
 
+
+//Evaluar el sistema electricpo y tomar desiciones
+void CheckElectricSystem(){
+  if(CheckElectricCFE==false){
+    //Si no funciona - mandar a apagar todo
+    setConfig_PC_DATA(false);
+    setConfig_PC_CENTRAL(false);
+  }
+}
+
+
+//Evaluar el sistema de enfriamiento
+void CheckEnfriamientoSystem(){
+  //Si el ventilador esta Activado - comprobar tiempo de Activacion
+  if(VENTILADOR){
+    //Obtener la diferencia de tiempo para manter
+    timeActualStillFrio=millis();
+    diferenceStillFrio=timeLastStillFrio-timeActualStillFrio;
+
+    //Si ya paso el tiempo de enfriamiento terminar frio//
+    if(diferenceStillFrio>timeStillFrio){
+      digitalWrite(pinVENTILADOR,LOW);
+      VENTILADOR = true;
+      timeLastFrio=timeActualStillFrio;
+    }
+  }else{
+    //Si no esta activado - comprobar tiempo para ser Activado
+    //Obtener la diferencia de tiempo
+    timeActualFrio = millis();
+    diferenceFrio = timeLastFrio - timeActualFrio;
+  
+    //Si ya paso el tiempo maximo activar enfriamiento
+    if(diferenceFrio>timeWaitFrio){
+      digitalWrite(pinVENTILADOR,HIGH);
+      VENTILADOR = true;
+    }
+  }
+}
+
+
+void CheckTimbreSystem(){
+  //Si se Activa el timbre mandar Alerta
+  if(digitalRead(pinTIMBRE) == HIGH){
+    //Activar la bocina
+    setConfig_BOCINA(true);
+
+    //Mandar mensaje al PC_CENTRAL
+    Serial.println("ALERT - Timbre Activado");
+  }
+}
+
+
+
+//Evaluar sistema de vocina para dejarlo encendo o mandarlo a apagar
+void CheckBOCINA(){
+  //Si la vocina esta activada - comprobar tiempo de Activacion
+  if(BOCINA){
+    //Obtener la diferencia de tiempo para manter
+    timeActualStillVoice=millis();
+    diferenceStillVoice=timeLastStillVoice-timeActualStillVoice;
+
+    //Si ya paso el tiempo de Sonido, apagar//
+    if(diferenceStillVoice>timeStillVoice){
+      setConfig_BOCINA(false);
+    }
+  }
+}
 
 
 //************ FUNCIONES DE CONFIGURACION ****************
@@ -262,7 +381,7 @@ void Reconfig(String data){
       }
   }else{
     
-    //Sistema de DataCenter
+    //Sistema de PC_CENTRAL
     if(data.indexOf("(DATA_CENTER)")>=0){
       //Config PC_CENTRAL
         if(data.indexOf("PC_CENTRAL")>=0){
@@ -292,6 +411,9 @@ void Reconfig(String data){
     }
   }
 }
+
+
+
 
 
 
@@ -381,5 +503,17 @@ void setConfig_PC_DATA(bool state){
     //Mandar la instruccion de Apagado
     PC_DATA=false;
     Serial.println("SET_CONFIG/PC_DATA(OFF)");  
+  }
+}
+
+
+//Activar o Desactivar VOCINA DEL TIMBRE
+void setConfig_BOCINA(bool state){
+  if(state==true){
+    digitalWrite(pinBOCINA,HIGH);
+    BOCINA=true;
+  }else{
+    digitalWrite(pinBOCINA,LOW);
+    BOCINA=false;
   }
 }
