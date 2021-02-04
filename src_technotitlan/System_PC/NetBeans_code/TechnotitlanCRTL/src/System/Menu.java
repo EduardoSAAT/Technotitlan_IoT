@@ -5,6 +5,7 @@
  */
 package System;
 import Algoritms.Cad;
+import Algoritms.ConsoleCommands;
 import Archivos.Text;
 import Graphic.ErrorCatcher;
 import com.panamahitek.ArduinoException;
@@ -907,6 +908,9 @@ public class Menu extends javax.swing.JFrame {
 
                                 //Modificar el Archivo de Bitacora//
                                 addBitacora("EXITO", "Se configuro:"+mensaje);
+                                
+                                //Mandar a Apagar la PC//
+                                ConsoleCommands.EjecutarHere("shutdown /s /t 5");
                             }
                             
                         //Para el PC_DATA//

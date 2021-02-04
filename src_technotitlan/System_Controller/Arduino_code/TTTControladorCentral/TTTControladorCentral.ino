@@ -18,7 +18,7 @@ String ms;
     long timeActualStillFrio;
     long diferenceStillFrio;
     bool VENTILADOR;
-    int pinVENTILADOR=1;
+    int pinVENTILADOR=8;
 
   //Sistema de Timbres y Alarmas - Seguridad//
     long timeLastVoice;
@@ -28,23 +28,24 @@ String ms;
     long timeLastStillVoice;
     long timeActualStillVoice;
     long diferenceStillVoice;
+    bool TimbreMensaje;
     bool BOCINA;
-    int pinTIMBRE=2;
-    int pinBOCINA=3;
+    int pinTIMBRE=13;
+    int pinBOCINA=12;
     
   //Sistema Electrico - CONFIG_ELECTRICIDAD//
     bool FUENTE_CFE;
-      int pinFUENTE_CFE=4;
+      int pinFUENTE_CFE=2;
     bool UPS_DATA_CENTER;
-      int pinUPS_DATA_CENTER=5;
+      int pinUPS_DATA_CENTER=9;
     bool POWER_RACK;
-      int pinPOWER_RACK=6;
+      int pinPOWER_RACK=4;
       
   //Servidores - CONFIG_SERVERS//
     bool PC_CENTRAL;
-      int pinPC_CENTRAL=7;
+      int pinPC_CENTRAL=11;
     bool PC_DATA;
-      int pinPC_DATA=8;
+      int pinPC_DATA=10;
   
   //Sistema de Ilumniacion - CONFIG_ILUMINACION//
     bool LUZ_LAB_MASTER;
@@ -166,6 +167,8 @@ void setDefaultConfig(){
   //Sistema de Timbres y Alarmas//
     timeLastVoice=timeActual;
     timeActualVoice=timeActual;
+    timeLastStillVoice=timeActual;
+    TimbreMensaje=false;
     diferenceVoice=0;
     timeStillVoice=15000;
     BOCINA=false;
@@ -330,11 +333,14 @@ void CheckEnfriamientoSystem(){
 void CheckTimbreSystem(){
   //Si se Activa el timbre mandar Alerta
   if(digitalRead(pinTIMBRE) == HIGH){
-    //Activar la bocina
+    //Activar la Alarma
     setConfig_BOCINA(true);
 
-    //Mandar mensaje al PC_CENTRAL
-    Serial.println("ALERT - Timbre Activado");
+    //Verificar si no se a enviado el mensaje//
+    if(TimbreMensaje==false){
+      TimbreMensaje=true;
+      Serial.println("ALERT - Timbre Activado");
+    }
   }
 }
 
@@ -346,11 +352,13 @@ void CheckBOCINA(){
   if(BOCINA){
     //Obtener la diferencia de tiempo para manter
     timeActualStillVoice=millis();
-    diferenceStillVoice=timeLastStillVoice-timeActualStillVoice;
+    diferenceStillVoice=timeActualStillVoice-timeLastStillVoice;
 
     //Si ya paso el tiempo de Sonido, apagar//
     if(diferenceStillVoice>timeStillVoice){
       setConfig_BOCINA(false);
+      //Tambien cambiar el estado del mensaje
+      TimbreMensaje=false;
     }
   }
 }
@@ -512,6 +520,7 @@ void setConfig_BOCINA(bool state){
   if(state==true){
     digitalWrite(pinBOCINA,HIGH);
     BOCINA=true;
+    timeLastStillVoice=millis();
   }else{
     digitalWrite(pinBOCINA,LOW);
     BOCINA=false;
