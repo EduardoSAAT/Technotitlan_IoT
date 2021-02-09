@@ -157,8 +157,8 @@ void setDefaultConfig(){
     VENTILADOR = false;
     timeLastFrio = timeActual;
     timeActualFrio = timeActual;
-    timeWaitFrio=3600000;
-    timeStillFrio=120000;
+    timeWaitFrio=60000; //3600000
+    timeStillFrio=10000; //120000
     diferenceFrio = 0;
     timeLastStillFrio=timeActual;
     timeActualStillFrio=timeActual;
@@ -304,27 +304,33 @@ void CheckElectricSystem(){
 //Evaluar el sistema de enfriamiento
 void CheckEnfriamientoSystem(){
   //Si el ventilador esta Activado - comprobar tiempo de Activacion
-  if(VENTILADOR){
+  if(VENTILADOR==true){
     //Obtener la diferencia de tiempo para manter
     timeActualStillFrio=millis();
-    diferenceStillFrio=timeLastStillFrio-timeActualStillFrio;
+    diferenceStillFrio=timeActualStillFrio-timeLastStillFrio;
 
     //Si ya paso el tiempo de enfriamiento terminar frio//
     if(diferenceStillFrio>timeStillFrio){
       digitalWrite(pinVENTILADOR,LOW);
-      VENTILADOR = true;
+      VENTILADOR = false;
+      Serial.println("Apagando frio");
       timeLastFrio=timeActualStillFrio;
     }
   }else{
     //Si no esta activado - comprobar tiempo para ser Activado
     //Obtener la diferencia de tiempo
     timeActualFrio = millis();
-    diferenceFrio = timeLastFrio - timeActualFrio;
+    diferenceFrio = timeActualFrio - timeLastFrio;
   
     //Si ya paso el tiempo maximo activar enfriamiento
     if(diferenceFrio>timeWaitFrio){
+      Serial.println("Encendiendo frio");
       digitalWrite(pinVENTILADOR,HIGH);
       VENTILADOR = true;
+
+      //Actualizar los tiempos
+      timeLastStillFrio=timeActualFrio;
+      timeLastFrio=timeActualFrio;
     }
   }
 }

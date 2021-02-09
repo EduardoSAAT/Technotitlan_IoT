@@ -910,7 +910,7 @@ public class Menu extends javax.swing.JFrame {
                                 addBitacora("EXITO", "Se configuro:"+mensaje);
                                 
                                 //Mandar a Apagar la PC//
-                                ConsoleCommands.EjecutarHere("shutdown /s /t 5");
+                                //ConsoleCommands.EjecutarHere("shutdown /s /t 5");
                             }
                             
                         //Para el PC_DATA//
